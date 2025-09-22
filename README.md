@@ -1,30 +1,87 @@
-# SaberAngola frontend developmen
+# SaberAngola - Plataforma de Geração de Documentos Acadêmicos
 
-*Automatically synced with your [v0.app](https://v0.app) deployments*
+Uma plataforma moderna para estudantes universitários angolanos criarem documentos acadêmicos profissionais de forma rápida e eficiente.
 
-[![Deployed on Vercel](https://img.shields.io/badge/Deployed%20on-Vercel-black?style=for-the-badge&logo=vercel)](https://vercel.com/quirinda-devtech-saberangola/v0-saber-angola-frontend-developmen)
-[![Built with v0](https://img.shields.io/badge/Built%20with-v0.app-black?style=for-the-badge)](https://v0.app/chat/projects/FVoTMNqC6g9)
+## 🚀 Funcionalidades
 
-## Overview
+- **Landing Page**: Apresentação da plataforma e registro de usuários
+- **Modelos**: Biblioteca de templates acadêmicos (monografias, TFC, CVs, cartas formais)
+- **Documentos**: Formulário de preenchimento de dados para geração
+- **Studio**: Editor premium para personalização avançada
+- **Perfil**: Gestão de conta e dados acadêmicos
+- **Guia do Usuário**: Tutoriais e documentação
 
-This repository will stay in sync with your deployed chats on [v0.app](https://v0.app).
-Any changes you make to your deployed app will be automatically pushed to this repository from [v0.app](https://v0.app).
+## 🛠️ Tecnologias
 
-## Deployment
+- **Framework**: Next.js 14 com App Router
+- **Styling**: Tailwind CSS v4
+- **UI Components**: Radix UI + shadcn/ui
+- **Tipografia**: Geist Sans & Geist Mono
+- **Ícones**: Lucide React
+- **Formulários**: React Hook Form + Zod
+- **Analytics**: Vercel Analytics
 
-Your project is live at:
+## 📦 Instalação
 
-**[https://vercel.com/quirinda-devtech-saberangola/v0-saber-angola-frontend-developmen](https://vercel.com/quirinda-devtech-saberangola/v0-saber-angola-frontend-developmen)**
+\`\`\`bash
+# Instalar dependências
+npm install
 
-## Build your app
+# Executar em desenvolvimento
+npm run dev
 
-Continue building your app on:
+# Build para produção
+npm run build
 
-**[https://v0.app/chat/projects/FVoTMNqC6g9](https://v0.app/chat/projects/FVoTMNqC6g9)**
+# Iniciar em produção
+npm start
+\`\`\`
 
-## How It Works
+## 🌐 Deploy
 
-1. Create and modify your project using [v0.app](https://v0.app)
-2. Deploy your chats from the v0 interface
-3. Changes are automatically pushed to this repository
-4. Vercel deploys the latest version from this repository
+O projeto está otimizado para deploy na Vercel:
+
+1. Conecte seu repositório à Vercel
+2. Configure as variáveis de ambiente necessárias
+3. Deploy automático a cada push
+
+### Variáveis de Ambiente
+
+\`\`\`env
+# Adicione suas variáveis de ambiente aqui
+NEXT_PUBLIC_APP_URL=https://seu-dominio.vercel.app
+\`\`\`
+
+## 📁 Estrutura do Projeto
+
+\`\`\`
+app/
+├── page.tsx              # Landing Page
+├── home/                 # Dashboard
+├── modelos/              # Biblioteca de Templates
+├── documentos/           # Formulário de Preenchimento
+├── studio/               # Editor Premium
+├── perfil/               # Gestão de Conta
+├── guia/                 # Tutoriais
+└── atualizacoes/         # Changelog
+
+components/
+├── navigation/           # Header & Footer
+├── ui/                   # Componentes UI
+└── ...
+
+public/
+├── images/               # Assets e Imagens
+└── ...
+\`\`\`
+
+## 🎨 Design System
+
+- **Cores Primárias**: Baseadas no logo da SaberAngola
+- **Tipografia**: Geist Sans para interface, Geist Mono para código
+- **Componentes**: Sistema consistente com Radix UI
+- **Responsividade**: Mobile-first design
+
+## 📄 Licença
+
+© 2024 SaberAngola. Todos os direitos reservados.
