@@ -1,3 +1,5 @@
+"use client"
+
 import { Header } from "@/components/navigation/header"
 import { Footer } from "@/components/navigation/footer"
 import { FloatingContactButton } from "@/components/ui/floating-contact-button"
@@ -5,16 +7,76 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
-import { BookOpen, FileText, Palette, TrendingUp, Search, Clock, Users, Star } from "lucide-react"
+import { BookOpen, FileText, Palette, TrendingUp, Search, Clock, Users, Star, Plus } from "lucide-react"
 import Link from "next/link"
+import { useEffect, useState } from "react"
+
+interface Document {
+  id: string
+  title: string
+  type: string
+  created_at: string
+  updated_at: string
+}
+
+interface UserProfile {
+  id: string
+  name: string
+  email: string
+  plan: string
+  documents_count: number
+}
 
 export default function HomePage() {
-  const recentActivities = [
-    { title: "Novo modelo de relatório acadêmico", type: "Modelo", time: "2 horas atrás" },
-    { title: "Guia de metodologia de pesquisa", type: "Documento", time: "5 horas atrás" },
-    { title: "Template de apresentação corporativa", type: "Studio", time: "1 dia atrás" },
-    { title: "Manual de boas práticas", type: "Documento", time: "2 dias atrás" },
-  ]
+  const [userProfile, setUserProfile] = useState<UserProfile | null>(null)
+  const [recentDocuments, setRecentDocuments] = useState<Document[]>([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        // Fetch user profile from /api/users/me/
+        const profileResponse = await fetch("/api/users/me/")
+        if (profileResponse.ok) {
+          const profile = await profileResponse.json()
+          setUserProfile(profile)
+        }
+
+        // Fetch recent documents from /api/documents/
+        const documentsResponse = await fetch("/api/documents/?limit=5&order_by=-updated_at")
+        if (documentsResponse.ok) {
+          const documents = await documentsResponse.json()
+          setRecentDocuments(documents.results || documents)
+        }
+      } catch (error) {
+        console.error("Error fetching user data:", error)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchUserData()
+  }, [])
+
+  const createNewDocument = async (templateId?: string) => {
+    try {
+      const response = await fetch("/api/documents/", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          title: "Novo Documento",
+          template_id: templateId,
+        }),
+      })
+
+      if (response.ok) {
+        const newDoc = await response.json()
+        window.location.href = `/studio?doc=${newDoc.id}`
+      }
+    } catch (error) {
+      console.error("Error creating document:", error)
+    }
+  }
 
   const popularContent = [
     { title: "Modelos de Teses e Dissertações", category: "Modelos", views: "2.3k", rating: 4.8 },
@@ -22,6 +84,21 @@ export default function HomePage() {
     { title: "Templates de Apresentação", category: "Studio", views: "1.5k", rating: 4.7 },
     { title: "Metodologia de Investigação", category: "Documentos", views: "1.2k", rating: 4.6 },
   ]
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex flex-col">
+        <Header />
+        <main className="flex-1 flex items-center justify-center">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+            <p>Carregando dashboard...</p>
+          </div>
+        </main>
+        <Footer />
+      </div>
+    )
+  }
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -33,10 +110,20 @@ export default function HomePage() {
           <div className="container max-w-6xl mx-auto">
             <div className="space-y-6">
               <div className="space-y-2">
-                <h1 className="text-3xl md:text-4xl font-bold text-balance">Bem-vindo de volta ao SaberAngola</h1>
+                <h1 className="text-3xl md:text-4xl font-bold text-balance">
+                  Bem-vindo de volta{userProfile?.name ? `, ${userProfile.name}` : ""}
+                </h1>
                 <p className="text-lg text-muted-foreground">
                   Continue sua jornada de aprendizagem e descubra novos recursos
                 </p>
+                {userProfile && (
+                  <div className="flex items-center space-x-4 text-sm text-muted-foreground">
+                    <span>
+                      Plano: <Badge variant="outline">{userProfile.plan}</Badge>
+                    </span>
+                    <span>{userProfile.documents_count} documentos criados</span>
+                  </div>
+                )}
               </div>
 
               {/* Search Bar */}
@@ -51,7 +138,13 @@ export default function HomePage() {
         {/* Quick Actions */}
         <section className="py-12 px-4">
           <div className="container max-w-6xl mx-auto">
-            <h2 className="text-2xl font-bold mb-8">Acesso Rápido</h2>
+            <div className="flex items-center justify-between mb-8">
+              <h2 className="text-2xl font-bold">Acesso Rápido</h2>
+              <Button onClick={() => createNewDocument()} className="flex items-center space-x-2">
+                <Plus className="h-4 w-4" />
+                <span>Novo Documento</span>
+              </Button>
+            </div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <Card className="hover:shadow-lg transition-shadow cursor-pointer group">
                 <CardHeader className="text-center">
@@ -103,30 +196,47 @@ export default function HomePage() {
         <section className="py-12 px-4 bg-muted/30">
           <div className="container max-w-6xl mx-auto">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-              {/* Recent Activities */}
+              {/* Recent Documents */}
               <div className="space-y-6">
                 <div className="flex items-center space-x-2">
                   <Clock className="h-5 w-5 text-primary" />
-                  <h2 className="text-2xl font-bold">Atividade Recente</h2>
+                  <h2 className="text-2xl font-bold">Documentos Recentes</h2>
                 </div>
                 <div className="space-y-4">
-                  {recentActivities.map((activity, index) => (
-                    <Card key={index} className="hover:shadow-md transition-shadow">
-                      <CardContent className="p-4">
-                        <div className="flex items-start justify-between">
-                          <div className="space-y-1">
-                            <h3 className="font-medium">{activity.title}</h3>
-                            <div className="flex items-center space-x-2">
-                              <Badge variant="secondary" className="text-xs">
-                                {activity.type}
-                              </Badge>
-                              <span className="text-xs text-muted-foreground">{activity.time}</span>
+                  {recentDocuments.length > 0 ? (
+                    recentDocuments.map((doc) => (
+                      <Card key={doc.id} className="hover:shadow-md transition-shadow">
+                        <CardContent className="p-4">
+                          <div className="flex items-start justify-between">
+                            <div className="space-y-1">
+                              <h3 className="font-medium">{doc.title}</h3>
+                              <div className="flex items-center space-x-2">
+                                <Badge variant="secondary" className="text-xs">
+                                  {doc.type}
+                                </Badge>
+                                <span className="text-xs text-muted-foreground">
+                                  {new Date(doc.updated_at).toLocaleDateString("pt-AO")}
+                                </span>
+                              </div>
                             </div>
+                            <Button size="sm" variant="ghost" asChild>
+                              <Link href={`/studio?doc=${doc.id}`}>Abrir</Link>
+                            </Button>
                           </div>
-                        </div>
+                        </CardContent>
+                      </Card>
+                    ))
+                  ) : (
+                    <Card>
+                      <CardContent className="p-8 text-center">
+                        <FileText className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                        <p className="text-muted-foreground">Nenhum documento criado ainda</p>
+                        <Button onClick={() => createNewDocument()} className="mt-4">
+                          Criar Primeiro Documento
+                        </Button>
                       </CardContent>
                     </Card>
-                  ))}
+                  )}
                 </div>
               </div>
 
