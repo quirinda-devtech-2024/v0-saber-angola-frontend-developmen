@@ -8,113 +8,138 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Search, Download, Eye, Star, Filter, FileText, Mail, User, Award } from "lucide-react"
+import { Search, Download, Eye, Star, FileText, BookOpen, ChevronRight, ArrowLeft } from "lucide-react"
+import { useState } from "react"
 
 export default function ModelosPage() {
-  const categories = [
-    { id: "cartas", name: "Cartas Formais", icon: Mail, count: 12 },
-    { id: "cvs", name: "CVs", icon: User, count: 8 },
-    { id: "declaracoes", name: "Declarações", icon: FileText, count: 15 },
-    { id: "certificados", name: "Certificados", icon: Award, count: 10 },
-  ]
+  const [currentView, setCurrentView] = useState<"categories" | "subcategories" | "models">("categories")
+  const [selectedCategory, setSelectedCategory] = useState<string>("")
+  const [selectedSubcategory, setSelectedSubcategory] = useState<string>("")
+  const [selectedCourse, setSelectedCourse] = useState<string>("")
+  const [selectedLevel, setSelectedLevel] = useState<string>("")
 
-  const models = [
+  const mainCategories = [
     {
-      id: 1,
-      title: "Carta de Pedido",
-      description: "Modelo para cartas de pedido formais para universidades e instituições",
-      category: "Cartas Formais",
-      downloads: 1234,
-      rating: 4.8,
-      preview: "/formal-letter-template.jpg",
-      tags: ["Pedido", "Formal", "Universidade"],
-      featured: true,
+      id: "trabalhos-escolares",
+      name: "Trabalhos Escolares",
+      icon: BookOpen,
+      description: "Monografias, TFC e trabalhos acadêmicos",
+      count: 45,
+      subcategories: [
+        {
+          id: "monografias",
+          name: "Monografias",
+          description: "Trabalhos de pesquisa acadêmica",
+          courses: ["Informática", "Direito", "Mecânica", "Gestão", "Medicina", "Engenharia"],
+        },
+        {
+          id: "tfc",
+          name: "Trabalhos de Final de Curso (TFC)",
+          description: "Projetos de conclusão de curso",
+          courses: ["Informática", "Direito", "Mecânica", "Gestão", "Medicina", "Engenharia"],
+        },
+        {
+          id: "trabalhos-normais",
+          name: "Trabalhos Normais",
+          description: "Trabalhos do dia a dia acadêmico",
+          levels: ["Ensino Médio", "Superior", "Técnico"],
+          subjects: ["Matemática", "História", "Programação", "Física", "Química", "Literatura"],
+        },
+      ],
     },
     {
-      id: 2,
-      title: "Carta de Recomendação",
-      description: "Template para cartas de recomendação acadêmica e profissional",
-      category: "Cartas Formais",
-      downloads: 987,
-      rating: 4.6,
-      preview: "/recommendation-letter-template.jpg",
-      tags: ["Recomendação", "Acadêmica", "Profissional"],
-      featured: true,
-    },
-    {
-      id: 3,
-      title: "Carta de Motivação",
-      description: "Modelo para cartas de motivação para candidaturas universitárias",
-      category: "Cartas Formais",
-      downloads: 756,
-      rating: 4.7,
-      preview: "/motivation-letter-template.jpg",
-      tags: ["Motivação", "Candidatura", "Universidade"],
-      featured: true,
-    },
-    {
-      id: 4,
-      title: "CV Estudante",
-      description: "Currículo otimizado para estudantes universitários",
-      category: "CVs",
-      downloads: 654,
-      rating: 4.9,
-      preview: "/student-cv-template.jpg",
-      tags: ["Estudante", "Universidade", "Primeiro Emprego"],
-      featured: true,
-    },
-    {
-      id: 5,
-      title: "CV Profissional",
-      description: "Currículo para profissionais com experiência",
-      category: "CVs",
-      downloads: 543,
-      rating: 4.5,
-      preview: "/professional-cv-template.jpg",
-      tags: ["Profissional", "Experiência", "Carreira"],
-      featured: false,
-    },
-    {
-      id: 6,
-      title: "Declaração de Matrícula",
-      description: "Modelo para declarações de matrícula universitária",
-      category: "Declarações",
-      downloads: 432,
-      rating: 4.8,
-      preview: "/enrollment-declaration-template.jpg",
-      tags: ["Matrícula", "Universidade", "Oficial"],
-      featured: false,
-    },
-    {
-      id: 7,
-      title: "Declaração de Conclusão",
-      description: "Template para declarações de conclusão de curso",
-      category: "Declarações",
-      downloads: 389,
-      rating: 4.7,
-      preview: "/completion-declaration-template.jpg",
-      tags: ["Conclusão", "Curso", "Certificação"],
-      featured: false,
-    },
-    {
-      id: 8,
-      title: "Certificado de Participação",
-      description: "Modelo para certificados de participação em eventos",
-      category: "Certificados",
-      downloads: 321,
-      rating: 4.6,
-      preview: "/participation-certificate-template.jpg",
-      tags: ["Participação", "Evento", "Certificação"],
-      featured: false,
+      id: "outros-documentos",
+      name: "Outros Documentos",
+      icon: FileText,
+      description: "CVs, cartas formais e certificados",
+      count: 25,
+      subcategories: [
+        {
+          id: "cvs",
+          name: "Currículos (CVs)",
+          description: "Modelos de currículo profissional",
+          types: ["Estudante", "Profissional", "Primeiro Emprego", "Executivo"],
+        },
+        {
+          id: "cartas-formais",
+          name: "Cartas Formais",
+          description: "Cartas de recomendação, motivação e pedido",
+          types: ["Recomendação", "Motivação", "Pedido", "Apresentação"],
+        },
+        {
+          id: "certificados-declaracoes",
+          name: "Certificados e Declarações",
+          description: "Documentos oficiais e certificações",
+          types: ["Participação", "Conclusão", "Matrícula", "Frequência"],
+        },
+      ],
     },
   ]
 
-  const featuredModels = models.filter((model) => model.featured)
+  const sampleModels = {
+    "monografias-informatica": [
+      {
+        id: 1,
+        title: "Monografia em Informática - Formato ABNT",
+        description: "Estrutura completa para monografia em Informática seguindo normas ABNT",
+        course: "Informática",
+        downloads: 1234,
+        rating: 4.8,
+        preview: "/academic-thesis-template.jpg",
+      },
+      {
+        id: 2,
+        title: "Monografia em Informática - Formato Simples",
+        description: "Modelo simplificado para monografia em Informática",
+        course: "Informática",
+        downloads: 987,
+        rating: 4.6,
+        preview: "/academic-thesis-template.jpg",
+      },
+    ],
+    "cvs-estudante": [
+      {
+        id: 3,
+        title: "CV Estudante Universitário",
+        description: "Currículo otimizado para estudantes sem experiência profissional",
+        type: "Estudante",
+        downloads: 2156,
+        rating: 4.9,
+        preview: "/student-cv-template.jpg",
+      },
+    ],
+  }
 
-  const handleSelectModel = (modelId: number) => {
-    // Redirect to Studio with selected model
-    window.location.href = `/studio?model=${modelId}`
+  const handleCategorySelect = (categoryId: string) => {
+    setSelectedCategory(categoryId)
+    setCurrentView("subcategories")
+  }
+
+  const handleSubcategorySelect = (subcategoryId: string) => {
+    setSelectedSubcategory(subcategoryId)
+    setCurrentView("models")
+  }
+
+  const handleModelSelect = (modelId: number) => {
+    window.location.href = `/documentos?model=${modelId}`
+  }
+
+  const handleBack = () => {
+    if (currentView === "models") {
+      setCurrentView("subcategories")
+    } else if (currentView === "subcategories") {
+      setCurrentView("categories")
+      setSelectedCategory("")
+    }
+  }
+
+  const getCurrentCategory = () => {
+    return mainCategories.find((cat) => cat.id === selectedCategory)
+  }
+
+  const getCurrentSubcategory = () => {
+    const category = getCurrentCategory()
+    return category?.subcategories.find((sub) => sub.id === selectedSubcategory)
   }
 
   return (
@@ -126,174 +151,196 @@ export default function ModelosPage() {
         <section className="py-12 px-4 bg-gradient-to-r from-primary/10 to-secondary/10">
           <div className="container max-w-6xl mx-auto">
             <div className="space-y-6">
+              {currentView !== "categories" && (
+                <Button variant="ghost" onClick={handleBack} className="mb-4">
+                  <ArrowLeft className="h-4 w-4 mr-2" />
+                  Voltar
+                </Button>
+              )}
+
               <div className="space-y-2">
-                <h1 className="text-3xl md:text-4xl font-bold text-balance">Biblioteca de Modelos</h1>
+                <h1 className="text-3xl md:text-4xl font-bold text-balance">
+                  {currentView === "categories" && "Biblioteca de Modelos"}
+                  {currentView === "subcategories" && getCurrentCategory()?.name}
+                  {currentView === "models" && getCurrentSubcategory()?.name}
+                </h1>
                 <p className="text-lg text-muted-foreground">
-                  Modelos prontos para cartas formais, CVs, declarações e certificados acadêmicos
+                  {currentView === "categories" && "Escolha a categoria de documento que precisa criar"}
+                  {currentView === "subcategories" && getCurrentCategory()?.description}
+                  {currentView === "models" && getCurrentSubcategory()?.description}
                 </p>
               </div>
 
-              {/* Search and Filters */}
-              <div className="flex flex-col md:flex-row gap-4">
-                <div className="relative flex-1">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
-                  <Input placeholder="Pesquisar modelos..." className="pl-10 h-12" />
+              {/* Search and Filters - only show in models view */}
+              {currentView === "models" && (
+                <div className="flex flex-col md:flex-row gap-4">
+                  <div className="relative flex-1">
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+                    <Input placeholder="Pesquisar modelos..." className="pl-10 h-12" />
+                  </div>
+                  {getCurrentSubcategory()?.courses && (
+                    <Select value={selectedCourse} onValueChange={setSelectedCourse}>
+                      <SelectTrigger className="w-full md:w-48 h-12">
+                        <SelectValue placeholder="Curso" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {getCurrentSubcategory()?.courses?.map((course) => (
+                          <SelectItem key={course} value={course}>
+                            {course}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  )}
+                  {getCurrentSubcategory()?.levels && (
+                    <Select value={selectedLevel} onValueChange={setSelectedLevel}>
+                      <SelectTrigger className="w-full md:w-48 h-12">
+                        <SelectValue placeholder="Nível" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {getCurrentSubcategory()?.levels?.map((level) => (
+                          <SelectItem key={level} value={level}>
+                            {level}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  )}
                 </div>
-                <Select>
-                  <SelectTrigger className="w-full md:w-48 h-12">
-                    <Filter className="h-4 w-4 mr-2" />
-                    <SelectValue placeholder="Categoria" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">Todas as categorias</SelectItem>
-                    <SelectItem value="cartas">Cartas Formais</SelectItem>
-                    <SelectItem value="cvs">CVs</SelectItem>
-                    <SelectItem value="declaracoes">Declarações</SelectItem>
-                    <SelectItem value="certificados">Certificados</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
+              )}
             </div>
           </div>
         </section>
 
-        {/* Categories */}
         <section className="py-12 px-4">
           <div className="container max-w-6xl mx-auto">
-            <h2 className="text-2xl font-bold mb-8">Categorias</h2>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              {categories.map((category) => (
-                <Card key={category.id} className="hover:shadow-lg transition-shadow cursor-pointer group">
-                  <CardHeader className="text-center pb-2">
-                    <category.icon className="h-8 w-8 text-primary mx-auto mb-2 group-hover:scale-110 transition-transform" />
-                    <CardTitle className="text-lg">{category.name}</CardTitle>
-                    <CardDescription>{category.count} modelos</CardDescription>
-                  </CardHeader>
-                </Card>
-              ))}
-            </div>
-          </div>
-        </section>
+            {/* Main Categories View */}
+            {currentView === "categories" && (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                {mainCategories.map((category) => (
+                  <Card
+                    key={category.id}
+                    className="hover:shadow-lg transition-shadow cursor-pointer group p-6"
+                    onClick={() => handleCategorySelect(category.id)}
+                  >
+                    <CardHeader className="text-center pb-4">
+                      <category.icon className="h-12 w-12 text-primary mx-auto mb-4 group-hover:scale-110 transition-transform" />
+                      <CardTitle className="text-2xl mb-2">{category.name}</CardTitle>
+                      <CardDescription className="text-base">{category.description}</CardDescription>
+                      <Badge variant="secondary" className="mt-2 w-fit mx-auto">
+                        {category.count} modelos disponíveis
+                      </Badge>
+                    </CardHeader>
+                    <CardContent className="text-center">
+                      <ChevronRight className="h-6 w-6 text-muted-foreground mx-auto group-hover:text-primary transition-colors" />
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            )}
 
-        {/* Models Content */}
-        <section className="py-12 px-4 bg-muted/30">
-          <div className="container max-w-6xl mx-auto">
-            <Tabs defaultValue="featured" className="space-y-8">
-              <TabsList className="grid w-full grid-cols-2 max-w-md mx-auto">
-                <TabsTrigger value="featured">Em Destaque</TabsTrigger>
-                <TabsTrigger value="all">Todos os Modelos</TabsTrigger>
-              </TabsList>
-
-              <TabsContent value="featured" className="space-y-8">
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {featuredModels.map((model) => (
-                    <Card key={model.id} className="hover:shadow-lg transition-shadow group">
-                      <div className="aspect-video bg-muted rounded-t-lg overflow-hidden">
-                        <img
-                          src={model.preview || "/placeholder.svg"}
-                          alt={model.title}
-                          className="w-full h-full object-cover group-hover:scale-105 transition-transform"
-                        />
+            {/* Subcategories View */}
+            {currentView === "subcategories" && getCurrentCategory() && (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {getCurrentCategory()?.subcategories.map((subcategory) => (
+                  <Card
+                    key={subcategory.id}
+                    className="hover:shadow-lg transition-shadow cursor-pointer group"
+                    onClick={() => handleSubcategorySelect(subcategory.id)}
+                  >
+                    <CardHeader>
+                      <CardTitle className="text-lg flex items-center justify-between">
+                        {subcategory.name}
+                        <ChevronRight className="h-5 w-5 text-muted-foreground group-hover:text-primary transition-colors" />
+                      </CardTitle>
+                      <CardDescription>{subcategory.description}</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="flex flex-wrap gap-1">
+                        {subcategory.courses?.slice(0, 3).map((course) => (
+                          <Badge key={course} variant="outline" className="text-xs">
+                            {course}
+                          </Badge>
+                        ))}
+                        {subcategory.levels?.slice(0, 2).map((level) => (
+                          <Badge key={level} variant="outline" className="text-xs">
+                            {level}
+                          </Badge>
+                        ))}
+                        {subcategory.types?.slice(0, 3).map((type) => (
+                          <Badge key={type} variant="outline" className="text-xs">
+                            {type}
+                          </Badge>
+                        ))}
                       </div>
-                      <CardHeader>
-                        <div className="flex items-start justify-between">
-                          <div className="space-y-1">
-                            <CardTitle className="text-lg">{model.title}</CardTitle>
-                            <CardDescription>{model.description}</CardDescription>
-                          </div>
-                          <Badge className="bg-primary/10 text-primary">Destaque</Badge>
-                        </div>
-                        <div className="flex flex-wrap gap-1">
-                          {model.tags.map((tag) => (
-                            <Badge key={tag} variant="secondary" className="text-xs">
-                              {tag}
-                            </Badge>
-                          ))}
-                        </div>
-                      </CardHeader>
-                      <CardContent>
-                        <div className="flex items-center justify-between mb-4">
-                          <div className="flex items-center space-x-4 text-sm text-muted-foreground">
-                            <div className="flex items-center space-x-1">
-                              <Download className="h-4 w-4" />
-                              <span>{model.downloads}</span>
-                            </div>
-                            <div className="flex items-center space-x-1">
-                              <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                              <span>{model.rating}</span>
-                            </div>
-                          </div>
-                        </div>
-                        <div className="flex gap-2">
-                          <Button size="sm" className="flex-1" onClick={() => handleSelectModel(model.id)}>
-                            <FileText className="h-4 w-4 mr-2" />
-                            Usar Modelo
-                          </Button>
-                          <Button size="sm" variant="outline">
-                            <Eye className="h-4 w-4" />
-                          </Button>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  ))}
-                </div>
-              </TabsContent>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            )}
 
-              <TabsContent value="all" className="space-y-8">
+            {/* Models View */}
+            {currentView === "models" && (
+              <div className="space-y-8">
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {models.map((model) => (
-                    <Card key={model.id} className="hover:shadow-lg transition-shadow group">
-                      <div className="aspect-video bg-muted rounded-t-lg overflow-hidden">
-                        <img
-                          src={model.preview || "/placeholder.svg"}
-                          alt={model.title}
-                          className="w-full h-full object-cover group-hover:scale-105 transition-transform"
-                        />
-                      </div>
-                      <CardHeader>
-                        <div className="flex items-start justify-between">
-                          <div className="space-y-1">
-                            <CardTitle className="text-lg">{model.title}</CardTitle>
-                            <CardDescription>{model.description}</CardDescription>
-                          </div>
-                          {model.featured && <Badge className="bg-primary/10 text-primary">Destaque</Badge>}
+                  {Object.values(sampleModels)
+                    .flat()
+                    .map((model) => (
+                      <Card key={model.id} className="hover:shadow-lg transition-shadow group">
+                        <div className="aspect-video bg-muted rounded-t-lg overflow-hidden">
+                          <img
+                            src={model.preview || "/placeholder.svg"}
+                            alt={model.title}
+                            className="w-full h-full object-cover group-hover:scale-105 transition-transform"
+                          />
                         </div>
-                        <div className="flex flex-wrap gap-1">
-                          {model.tags.map((tag) => (
-                            <Badge key={tag} variant="secondary" className="text-xs">
-                              {tag}
+                        <CardHeader>
+                          <CardTitle className="text-lg">{model.title}</CardTitle>
+                          <CardDescription>{model.description}</CardDescription>
+                          {(model.course || model.type) && (
+                            <Badge variant="secondary" className="w-fit">
+                              {model.course || model.type}
                             </Badge>
-                          ))}
-                        </div>
-                      </CardHeader>
-                      <CardContent>
-                        <div className="flex items-center justify-between mb-4">
-                          <div className="flex items-center space-x-4 text-sm text-muted-foreground">
-                            <div className="flex items-center space-x-1">
-                              <Download className="h-4 w-4" />
-                              <span>{model.downloads}</span>
-                            </div>
-                            <div className="flex items-center space-x-1">
-                              <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                              <span>{model.rating}</span>
+                          )}
+                        </CardHeader>
+                        <CardContent>
+                          <div className="flex items-center justify-between mb-4">
+                            <div className="flex items-center space-x-4 text-sm text-muted-foreground">
+                              <div className="flex items-center space-x-1">
+                                <Download className="h-4 w-4" />
+                                <span>{model.downloads}</span>
+                              </div>
+                              <div className="flex items-center space-x-1">
+                                <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
+                                <span>{model.rating}</span>
+                              </div>
                             </div>
                           </div>
-                        </div>
-                        <div className="flex gap-2">
-                          <Button size="sm" className="flex-1" onClick={() => handleSelectModel(model.id)}>
-                            <FileText className="h-4 w-4 mr-2" />
-                            Usar Modelo
-                          </Button>
-                          <Button size="sm" variant="outline">
-                            <Eye className="h-4 w-4" />
-                          </Button>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  ))}
+                          <div className="flex gap-2">
+                            <Button size="sm" className="flex-1" onClick={() => handleModelSelect(model.id)}>
+                              <FileText className="h-4 w-4 mr-2" />
+                              Selecionar
+                            </Button>
+                            <Button size="sm" variant="outline">
+                              <Eye className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    ))}
                 </div>
-              </TabsContent>
-            </Tabs>
+
+                {Object.values(sampleModels).flat().length === 0 && (
+                  <div className="text-center py-12">
+                    <FileText className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                    <h3 className="text-lg font-semibold mb-2">Nenhum modelo encontrado</h3>
+                    <p className="text-muted-foreground">
+                      Tente ajustar os filtros ou escolher uma categoria diferente.
+                    </p>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         </section>
       </main>
