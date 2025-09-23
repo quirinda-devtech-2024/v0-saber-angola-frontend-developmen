@@ -18,16 +18,31 @@ import {
   Clock,
   Download,
   Shield,
+  HelpCircle,
+  ChevronDown,
+  Play,
+  Award,
+  Zap,
+  Globe,
+  Lock,
+  Smartphone,
 } from "lucide-react"
 import Link from "next/link"
+import { useState } from "react"
 
 export default function LandingPage() {
+  const [openFaq, setOpenFaq] = useState<number | null>(null)
+
   const handleLogin = () => {
     window.location.href = "/auth/login"
   }
 
   const handleRegister = () => {
     window.location.href = "/auth/register"
+  }
+
+  const toggleFaq = (index: number) => {
+    setOpenFaq(openFaq === index ? null : index)
   }
 
   return (
@@ -282,6 +297,93 @@ export default function LandingPage() {
           </div>
         </section>
 
+        {/* How It Works Section */}
+        <section className="py-24 px-4">
+          <div className="container max-w-6xl mx-auto">
+            <div className="text-center space-y-4 mb-16">
+              <Badge variant="outline" className="text-sm px-4 py-2">
+                Como funciona
+              </Badge>
+              <h2 className="text-4xl md:text-5xl font-bold text-balance">
+                Simples como
+                <span className="text-primary block">1, 2, 3</span>
+              </h2>
+              <p className="text-xl text-muted-foreground max-w-2xl mx-auto text-balance">
+                Processo intuitivo que leva você do zero ao documento profissional em minutos
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 relative">
+              {/* Step 1 */}
+              <div className="text-center relative">
+                <div className="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-6 relative">
+                  <span className="text-2xl font-bold text-primary">1</span>
+                  <div className="absolute -top-2 -right-2 w-6 h-6 bg-primary rounded-full flex items-center justify-center">
+                    <BookOpen className="w-3 h-3 text-primary-foreground" />
+                  </div>
+                </div>
+                <h3 className="text-xl font-semibold mb-3">Escolha o Modelo</h3>
+                <p className="text-muted-foreground leading-relaxed">
+                  Navegue pela nossa biblioteca de templates e selecione o que melhor se adequa às suas necessidades
+                  acadêmicas ou profissionais.
+                </p>
+              </div>
+
+              {/* Step 2 */}
+              <div className="text-center relative">
+                <div className="w-20 h-20 bg-secondary/10 rounded-full flex items-center justify-center mx-auto mb-6 relative">
+                  <span className="text-2xl font-bold text-secondary">2</span>
+                  <div className="absolute -top-2 -right-2 w-6 h-6 bg-secondary rounded-full flex items-center justify-center">
+                    <FileText className="w-3 h-3 text-secondary-foreground" />
+                  </div>
+                </div>
+                <h3 className="text-xl font-semibold mb-3">Preencha os Dados</h3>
+                <p className="text-muted-foreground leading-relaxed">
+                  Complete o formulário inteligente com suas informações. Nossa IA sugere conteúdo relevante para
+                  otimizar seu documento.
+                </p>
+              </div>
+
+              {/* Step 3 */}
+              <div className="text-center relative">
+                <div className="w-20 h-20 bg-accent/10 rounded-full flex items-center justify-center mx-auto mb-6 relative">
+                  <span className="text-2xl font-bold text-accent">3</span>
+                  <div className="absolute -top-2 -right-2 w-6 h-6 bg-accent rounded-full flex items-center justify-center">
+                    <Download className="w-3 h-3 text-accent-foreground" />
+                  </div>
+                </div>
+                <h3 className="text-xl font-semibold mb-3">Baixe e Use</h3>
+                <p className="text-muted-foreground leading-relaxed">
+                  Seu documento está pronto! Baixe em PDF ou Word com formatação profissional e use onde precisar.
+                </p>
+              </div>
+
+              {/* Connecting Lines */}
+              <div className="hidden md:block absolute top-10 left-1/4 w-1/2 h-0.5 bg-gradient-to-r from-primary via-secondary to-accent opacity-20"></div>
+            </div>
+
+            {/* Demo Video Placeholder */}
+            <div className="mt-16 text-center">
+              <div className="bg-muted/50 rounded-2xl p-12 max-w-4xl mx-auto relative overflow-hidden">
+                <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-secondary/5"></div>
+                <div className="relative">
+                  <div className="w-20 h-20 bg-primary/20 rounded-full flex items-center justify-center mx-auto mb-6">
+                    <Play className="w-8 h-8 text-primary ml-1" />
+                  </div>
+                  <h3 className="text-2xl font-semibold mb-4">Veja o SaberAngola em ação</h3>
+                  <p className="text-muted-foreground mb-6 max-w-2xl mx-auto">
+                    Assista como é fácil criar um documento profissional em menos de 3 minutos
+                  </p>
+                  <Button size="lg" variant="outline" className="bg-background">
+                    <Play className="w-4 h-4 mr-2" />
+                    Assistir demonstração
+                  </Button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
         {/* Testimonials Section */}
         <section className="py-24 px-4 bg-muted/30">
           <div className="container max-w-6xl mx-auto">
@@ -364,6 +466,208 @@ export default function LandingPage() {
                   </div>
                 </CardHeader>
               </Card>
+            </div>
+          </div>
+        </section>
+
+        {/* Why Choose Us Section */}
+        <section className="py-24 px-4 bg-muted/30">
+          <div className="container max-w-6xl mx-auto">
+            <div className="text-center space-y-4 mb-16">
+              <Badge variant="outline" className="text-sm px-4 py-2">
+                Por que escolher
+              </Badge>
+              <h2 className="text-4xl md:text-5xl font-bold text-balance">
+                Mais que uma ferramenta,
+                <span className="text-primary block">seu parceiro de sucesso</span>
+              </h2>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+              <div className="space-y-8">
+                <div className="flex gap-4">
+                  <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center flex-shrink-0">
+                    <Award className="w-6 h-6 text-primary" />
+                  </div>
+                  <div>
+                    <h3 className="text-xl font-semibold mb-2">Qualidade Universitária</h3>
+                    <p className="text-muted-foreground leading-relaxed">
+                      Templates desenvolvidos por especialistas acadêmicos e revisados por professores universitários
+                      angolanos.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex gap-4">
+                  <div className="w-12 h-12 bg-secondary/10 rounded-lg flex items-center justify-center flex-shrink-0">
+                    <Zap className="w-6 h-6 text-secondary" />
+                  </div>
+                  <div>
+                    <h3 className="text-xl font-semibold mb-2">Tecnologia Avançada</h3>
+                    <p className="text-muted-foreground leading-relaxed">
+                      IA integrada que sugere melhorias, corrige erros e otimiza seu conteúdo automaticamente.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex gap-4">
+                  <div className="w-12 h-12 bg-accent/10 rounded-lg flex items-center justify-center flex-shrink-0">
+                    <Globe className="w-6 h-6 text-accent" />
+                  </div>
+                  <div>
+                    <h3 className="text-xl font-semibold mb-2">Padrões Angolanos</h3>
+                    <p className="text-muted-foreground leading-relaxed">
+                      Formatação específica para universidades e empresas angolanas, seguindo normas locais.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex gap-4">
+                  <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center flex-shrink-0">
+                    <Lock className="w-6 h-6 text-primary" />
+                  </div>
+                  <div>
+                    <h3 className="text-xl font-semibold mb-2">Segurança Total</h3>
+                    <p className="text-muted-foreground leading-relaxed">
+                      Seus dados são protegidos com criptografia de nível bancário. Privacidade garantida.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="relative">
+                <div className="bg-card border rounded-2xl p-8 shadow-xl">
+                  <div className="space-y-6">
+                    <div className="flex items-center justify-between">
+                      <h3 className="font-semibold text-lg">Painel de Controle</h3>
+                      <Badge variant="secondary" className="bg-green-100 text-green-700">
+                        <Smartphone className="w-3 h-3 mr-1" />
+                        Mobile
+                      </Badge>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="bg-primary/5 rounded-lg p-4 text-center">
+                        <div className="text-2xl font-bold text-primary mb-1">47</div>
+                        <div className="text-xs text-muted-foreground">Documentos</div>
+                      </div>
+                      <div className="bg-secondary/5 rounded-lg p-4 text-center">
+                        <div className="text-2xl font-bold text-secondary mb-1">12</div>
+                        <div className="text-xs text-muted-foreground">Templates</div>
+                      </div>
+                    </div>
+
+                    <div className="space-y-3">
+                      <div className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
+                        <div className="flex items-center gap-3">
+                          <div className="w-8 h-8 bg-primary/20 rounded-full flex items-center justify-center">
+                            <FileText className="w-4 h-4 text-primary" />
+                          </div>
+                          <span className="text-sm font-medium">CV Profissional</span>
+                        </div>
+                        <Badge variant="outline" className="text-xs">
+                          Concluído
+                        </Badge>
+                      </div>
+                      <div className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
+                        <div className="flex items-center gap-3">
+                          <div className="w-8 h-8 bg-secondary/20 rounded-full flex items-center justify-center">
+                            <FileText className="w-4 h-4 text-secondary" />
+                          </div>
+                          <span className="text-sm font-medium">Carta Motivação</span>
+                        </div>
+                        <Badge variant="outline" className="text-xs">
+                          Em progresso
+                        </Badge>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* FAQ Section */}
+        <section className="py-24 px-4">
+          <div className="container max-w-4xl mx-auto">
+            <div className="text-center space-y-4 mb-16">
+              <Badge variant="outline" className="text-sm px-4 py-2">
+                FAQ
+              </Badge>
+              <h2 className="text-4xl md:text-5xl font-bold text-balance">
+                Perguntas
+                <span className="text-primary block">frequentes</span>
+              </h2>
+              <p className="text-xl text-muted-foreground max-w-2xl mx-auto text-balance">
+                Tire suas dúvidas sobre o SaberAngola
+              </p>
+            </div>
+
+            <div className="space-y-4">
+              {[
+                {
+                  question: "O SaberAngola é gratuito?",
+                  answer:
+                    "Sim! Oferecemos um plano gratuito com acesso a templates básicos. Para recursos avançados como o Studio de edição e templates premium, temos planos acessíveis a partir de 2.500 Kz/mês.",
+                },
+                {
+                  question: "Os documentos seguem padrões angolanos?",
+                  answer:
+                    "Absolutamente! Todos os nossos templates foram desenvolvidos seguindo as normas e padrões específicos das universidades e empresas angolanas, garantindo total compatibilidade.",
+                },
+                {
+                  question: "Posso editar os documentos após criá-los?",
+                  answer:
+                    "Sim! Com o Studio Premium você pode editar, revisar e atualizar seus documentos quantas vezes quiser. Também mantemos um histórico de versões para sua segurança.",
+                },
+                {
+                  question: "Meus dados estão seguros?",
+                  answer:
+                    "Sua privacidade é nossa prioridade. Utilizamos criptografia de nível bancário e nunca compartilhamos seus dados pessoais. Você tem controle total sobre suas informações.",
+                },
+                {
+                  question: "Posso usar no celular?",
+                  answer:
+                    "Claro! O SaberAngola é totalmente responsivo e funciona perfeitamente em smartphones, tablets e computadores. Crie documentos onde estiver.",
+                },
+                {
+                  question: "Que tipos de documentos posso criar?",
+                  answer:
+                    "Oferecemos templates para CVs, cartas formais, cartas de motivação, monografias, TFC, declarações, certificados e muito mais. Nossa biblioteca está sempre crescendo.",
+                },
+              ].map((faq, index) => (
+                <Card key={index} className="border-0 shadow-sm">
+                  <CardHeader className="p-0">
+                    <button
+                      onClick={() => toggleFaq(index)}
+                      className="w-full p-6 text-left flex items-center justify-between hover:bg-muted/50 transition-colors rounded-lg"
+                    >
+                      <span className="font-semibold text-lg">{faq.question}</span>
+                      <ChevronDown
+                        className={`w-5 h-5 text-muted-foreground transition-transform ${
+                          openFaq === index ? "rotate-180" : ""
+                        }`}
+                      />
+                    </button>
+                    {openFaq === index && (
+                      <div className="px-6 pb-6">
+                        <p className="text-muted-foreground leading-relaxed">{faq.answer}</p>
+                      </div>
+                    )}
+                  </CardHeader>
+                </Card>
+              ))}
+            </div>
+
+            <div className="text-center mt-12">
+              <p className="text-muted-foreground mb-4">Não encontrou sua resposta?</p>
+              <Button variant="outline" asChild>
+                <Link href="/guia">
+                  <HelpCircle className="w-4 h-4 mr-2" />
+                  Ver guia completo
+                </Link>
+              </Button>
             </div>
           </div>
         </section>
