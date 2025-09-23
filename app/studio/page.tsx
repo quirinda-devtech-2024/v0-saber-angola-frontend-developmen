@@ -144,17 +144,15 @@ Com base nos estudos realizados, pode-se concluir que...
     await new Promise((resolve) => setTimeout(resolve, 1500))
     setLastSaved(new Date())
     setIsSaving(false)
-    console.log("[v0] Document saved:", { title: documentTitle, content: documentContent })
   }
 
   const handleExport = (format: "word" | "pdf") => {
-    console.log("[v0] Exporting document as:", format)
     // Mock export operation
     alert(`Exportando documento como ${format.toUpperCase()}...`)
   }
 
   const handleRevertVersion = (versionId: number) => {
-    console.log("[v0] Reverting to version:", versionId)
+    // Mock revert operation
     alert(`Revertendo para a versão ${versionId}...`)
   }
 

@@ -207,7 +207,6 @@ export default function DocumentosPage() {
 
   const handleSaveDraft = async () => {
     // Mock API call to save draft
-    console.log("[v0] Saving draft:", formData)
     // In real implementation: POST /api/documents/drafts
   }
 
@@ -236,7 +235,6 @@ export default function DocumentosPage() {
 
     setIsGenerating(false)
     // In real implementation: POST /api/documents/generate
-    console.log("[v0] Document generated:", formData)
   }
 
   const groupFieldsBySection = () => {

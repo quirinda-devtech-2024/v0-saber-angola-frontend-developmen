@@ -49,7 +49,7 @@ export default function HomePage() {
           setRecentDocuments(documents.results || documents)
         }
       } catch (error) {
-        console.error("Error fetching user data:", error)
+        // Error handling for user data fetch
       } finally {
         setLoading(false)
       }
@@ -74,7 +74,7 @@ export default function HomePage() {
         window.location.href = `/studio?doc=${newDoc.id}`
       }
     } catch (error) {
-      console.error("Error creating document:", error)
+      // Error handling for document creation
     }
   }
 
