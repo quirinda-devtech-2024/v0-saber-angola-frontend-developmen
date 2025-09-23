@@ -22,11 +22,16 @@ import {
   TrendingUp,
   Globe,
   Zap,
+  ChevronDown,
+  ChevronUp,
 } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
+import { useState } from "react"
 
 export default function LandingPage() {
+  const [openFAQ, setOpenFAQ] = useState<number | null>(null)
+
   const handleLogin = () => {
     window.location.href = "/auth/login"
   }
@@ -34,6 +39,33 @@ export default function LandingPage() {
   const handleRegister = () => {
     window.location.href = "/auth/register"
   }
+
+  const toggleFAQ = (index: number) => {
+    setOpenFAQ(openFAQ === index ? null : index)
+  }
+
+  const faqData = [
+    {
+      question: "O SaberAngola é gratuito?",
+      answer:
+        "Sim! Oferecemos uma versão gratuita com acesso a modelos básicos. Também temos planos premium com recursos avançados e mais modelos profissionais.",
+    },
+    {
+      question: "Posso editar os documentos depois de baixar?",
+      answer:
+        "Sim! Os documentos são gerados em formato Word (.docx), permitindo edições posteriores completas. Também oferecemos exportação em PDF para envio direto.",
+    },
+    {
+      question: "Os modelos seguem padrões angolanos?",
+      answer:
+        "Absolutamente! Todos os nossos modelos foram criados especificamente para o contexto acadêmico e profissional angolano, seguindo normas locais e internacionais.",
+    },
+    {
+      question: "Como posso obter suporte?",
+      answer:
+        "Oferecemos suporte completo através do nosso sistema de tickets, chat online e seção de guias com tutoriais detalhados e FAQ abrangente.",
+    },
+  ]
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -394,49 +426,41 @@ export default function LandingPage() {
               </p>
             </div>
 
-            <div className="space-y-6">
-              <Card className="p-6 hover:shadow-md transition-shadow">
-                <h3 className="text-lg font-semibold mb-3 flex items-center">
-                  <CheckCircle className="h-5 w-5 text-primary mr-3 flex-shrink-0" />O SaberAngola é gratuito?
-                </h3>
-                <p className="text-muted-foreground leading-relaxed ml-8">
-                  Sim! Oferecemos uma versão gratuita com acesso a modelos básicos. Também temos planos premium com
-                  recursos avançados e mais modelos profissionais.
-                </p>
-              </Card>
+            <div className="space-y-4">
+              {faqData.map((faq, index) => (
+                <Card key={index} className="overflow-hidden hover:shadow-md transition-all duration-300">
+                  <button
+                    onClick={() => toggleFAQ(index)}
+                    className="w-full p-6 text-left hover:bg-muted/50 transition-colors duration-200"
+                  >
+                    <div className="flex items-center justify-between">
+                      <h3 className="text-lg font-semibold flex items-center">
+                        <CheckCircle className="h-5 w-5 text-primary mr-3 flex-shrink-0" />
+                        {faq.question}
+                      </h3>
+                      <div className="ml-4 flex-shrink-0">
+                        {openFAQ === index ? (
+                          <ChevronUp className="h-5 w-5 text-muted-foreground" />
+                        ) : (
+                          <ChevronDown className="h-5 w-5 text-muted-foreground" />
+                        )}
+                      </div>
+                    </div>
+                  </button>
 
-              <Card className="p-6 hover:shadow-md transition-shadow">
-                <h3 className="text-lg font-semibold mb-3 flex items-center">
-                  <CheckCircle className="h-5 w-5 text-primary mr-3 flex-shrink-0" />
-                  Posso editar os documentos depois de baixar?
-                </h3>
-                <p className="text-muted-foreground leading-relaxed ml-8">
-                  Sim! Os documentos são gerados em formato Word (.docx), permitindo edições posteriores completas.
-                  Também oferecemos exportação em PDF para envio direto.
-                </p>
-              </Card>
-
-              <Card className="p-6 hover:shadow-md transition-shadow">
-                <h3 className="text-lg font-semibold mb-3 flex items-center">
-                  <CheckCircle className="h-5 w-5 text-primary mr-3 flex-shrink-0" />
-                  Os modelos seguem padrões angolanos?
-                </h3>
-                <p className="text-muted-foreground leading-relaxed ml-8">
-                  Absolutamente! Todos os nossos modelos foram criados especificamente para o contexto acadêmico e
-                  profissional angolano, seguindo normas locais e internacionais.
-                </p>
-              </Card>
-
-              <Card className="p-6 hover:shadow-md transition-shadow">
-                <h3 className="text-lg font-semibold mb-3 flex items-center">
-                  <CheckCircle className="h-5 w-5 text-primary mr-3 flex-shrink-0" />
-                  Como posso obter suporte?
-                </h3>
-                <p className="text-muted-foreground leading-relaxed ml-8">
-                  Oferecemos suporte completo através do nosso sistema de tickets, chat online e seção de guias com
-                  tutoriais detalhados e FAQ abrangente.
-                </p>
-              </Card>
+                  <div
+                    className={`overflow-hidden transition-all duration-300 ease-in-out ${
+                      openFAQ === index ? "max-h-96 opacity-100" : "max-h-0 opacity-0"
+                    }`}
+                  >
+                    <div className="px-6 pb-6">
+                      <p className="text-muted-foreground leading-relaxed ml-8 pt-2 border-t border-muted">
+                        {faq.answer}
+                      </p>
+                    </div>
+                  </div>
+                </Card>
+              ))}
             </div>
           </div>
         </section>
