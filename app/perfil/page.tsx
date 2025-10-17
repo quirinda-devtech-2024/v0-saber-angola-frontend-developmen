@@ -198,101 +198,110 @@ export default function PerfilPage() {
               </TabsList>
 
               <TabsContent value="overview" className="space-y-8">
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                  {/* Progress Card */}
-                  <Card className="lg:col-span-2">
-                    <CardHeader>
-                      <CardTitle className="flex items-center space-x-2">
-                        <Trophy className="h-5 w-5 text-primary" />
-                        <span>Progresso do Nível</span>
-                      </CardTitle>
-                      <CardDescription>
-                        Você está no nível {userStats.level} com {userStats.points} pontos
-                      </CardDescription>
-                    </CardHeader>
-                    <CardContent className="space-y-4">
-                      <div className="space-y-2">
-                        <div className="flex justify-between text-sm">
-                          <span>Progresso para o próximo nível</span>
-                          <span>
-                            {userStats.points}/{userStats.nextLevelPoints}
-                          </span>
-                        </div>
-                        <Progress value={(userStats.points / userStats.nextLevelPoints) * 100} className="h-3" />
-                      </div>
-                      <div className="text-sm text-muted-foreground">
-                        Faltam {userStats.nextLevelPoints - userStats.points} pontos para o próximo nível
-                      </div>
-                    </CardContent>
-                  </Card>
+  {/* Quick Overview + Actions */}
+  <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+    {/* Nível e Progresso */}
+    <Card className="lg:col-span-2">
+      <CardHeader>
+        <CardTitle className="flex items-center space-x-2">
+          <Trophy className="h-5 w-5 text-primary" />
+          <span>Progresso e Pontuação</span>
+        </CardTitle>
+        <CardDescription>
+          Seu nível: <strong>{userStats.level}</strong> — {userStats.points} pontos
+        </CardDescription>
+      </CardHeader>
+      <CardContent className="space-y-6">
+        <Progress value={(userStats.points / userStats.nextLevelPoints) * 100} className="h-3" />
+        <div className="text-sm text-muted-foreground">
+          Faltam <strong>{userStats.nextLevelPoints - userStats.points}</strong> pontos para o próximo nível.
+        </div>
 
-                  {/* Quick Stats */}
-                  <Card>
-                    <CardHeader>
-                      <CardTitle className="flex items-center space-x-2">
-                        <Activity className="h-5 w-5 text-secondary" />
-                        <span>Estatísticas</span>
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent className="space-y-4">
-                      <div className="space-y-3">
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center space-x-2">
-                            <Download className="h-4 w-4 text-blue-600" />
-                            <span className="text-sm">Downloads</span>
-                          </div>
-                          <span className="font-medium">{userStats.totalDownloads}</span>
-                        </div>
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center space-x-2">
-                            <Palette className="h-4 w-4 text-green-600" />
-                            <span className="text-sm">Projetos</span>
-                          </div>
-                          <span className="font-medium">{userStats.projectsCreated}</span>
-                        </div>
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center space-x-2">
-                            <FileText className="h-4 w-4 text-purple-600" />
-                            <span className="text-sm">Templates</span>
-                          </div>
-                          <span className="font-medium">{userStats.templatesUsed}</span>
-                        </div>
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center space-x-2">
-                            <Clock className="h-4 w-4 text-orange-600" />
-                            <span className="text-sm">Horas de Estudo</span>
-                          </div>
-                          <span className="font-medium">{userStats.studyHours}h</span>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
+        <div className="flex gap-3">
+          <Button asChild>
+            <a href="/modelos">
+              <FileText className="h-4 w-4 mr-2" />
+              Emitir Documento
+            </a>
+          </Button>
+          <Button variant="outline" asChild>
+            <a href="/documentos/historico">
+              <Download className="h-4 w-4 mr-2" />
+              Ver Histórico
+            </a>
+          </Button>
+        </div>
+      </CardContent>
+    </Card>
+
+    {/* Estatísticas rápidas */}
+    <Card>
+      <CardHeader>
+        <CardTitle className="flex items-center space-x-2">
+          <Activity className="h-5 w-5 text-secondary" />
+          <span>Resumo de Atividades</span>
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        {[
+          { label: "Declarações emitidas", value: 14, icon: FileText, color: "text-blue-600" },
+          { label: "Contratos criados", value: 9, icon: BookOpen, color: "text-green-600" },
+          { label: "Currículos gerados", value: 5, icon: User, color: "text-purple-600" },
+        ].map((item) => (
+          <div key={item.label} className="flex items-center justify-between">
+            <div className="flex items-center space-x-2">
+              <item.icon className={`h-4 w-4 ${item.color}`} />
+              <span className="text-sm">{item.label}</span>
+            </div>
+            <span className="font-medium">{item.value}</span>
+          </div>
+        ))}
+      </CardContent>
+    </Card>
+  </div>
+
+  {/* Documentos recentes */}
+  <Card>
+    <CardHeader>
+      <CardTitle className="flex items-center space-x-2">
+        <Clock className="h-5 w-5 text-primary" />
+        <span>Documentos Recentes</span>
+      </CardTitle>
+      <CardDescription>Últimos documentos emitidos pelo usuário</CardDescription>
+    </CardHeader>
+    <CardContent>
+      <div className="space-y-3">
+        {[
+          { id: 1, tipo: "Declaração de Rendimento", data: "2025-10-12", status: "Concluído" },
+          { id: 2, tipo: "Contrato de Prestação de Serviços", data: "2025-10-08", status: "Concluído" },
+          { id: 3, tipo: "Currículo Profissional", data: "2025-10-02", status: "Em edição" },
+        ].map((doc) => (
+          <div
+            key={doc.id}
+            className="flex items-center justify-between p-3 rounded-lg border hover:bg-muted/40 transition-colors"
+          >
+            <div className="flex items-center space-x-3">
+              <FileText className="h-4 w-4 text-primary" />
+              <div>
+                <div className="font-medium">{doc.tipo}</div>
+                <div className="text-xs text-muted-foreground">
+                  Emitido em {new Date(doc.data).toLocaleDateString("pt-BR")}
                 </div>
+              </div>
+            </div>
+            <Badge
+              variant={doc.status === "Concluído" ? "secondary" : "outline"}
+              className={doc.status === "Em edição" ? "text-orange-600" : ""}
+            >
+              {doc.status}
+            </Badge>
+          </div>
+        ))}
+      </div>
+    </CardContent>
+  </Card>
+</TabsContent>
 
-                {/* Recent Activity */}
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="flex items-center space-x-2">
-                      <Clock className="h-5 w-5 text-primary" />
-                      <span>Atividade Recente</span>
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-4">
-                      {recentActivity.map((activity) => (
-                        <div key={activity.id} className="flex items-center space-x-4 p-3 rounded-lg bg-muted/30">
-                          {getActivityIcon(activity.type)}
-                          <div className="flex-1">
-                            <div className="font-medium">{activity.action}</div>
-                            <div className="text-sm text-muted-foreground">{activity.item}</div>
-                          </div>
-                          <div className="text-xs text-muted-foreground">{activity.time}</div>
-                        </div>
-                      ))}
-                    </div>
-                  </CardContent>
-                </Card>
-              </TabsContent>
 
               <TabsContent value="settings" className="space-y-8">
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
