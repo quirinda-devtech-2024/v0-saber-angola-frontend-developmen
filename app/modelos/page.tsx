@@ -19,62 +19,147 @@ export default function ModelosPage() {
   const [selectedLevel, setSelectedLevel] = useState<string>("")
 
   const mainCategories = [
-    {
-      id: "trabalhos-escolares",
-      name: "Trabalhos Escolares",
-      icon: BookOpen,
-      description: "Monografias, TFC e trabalhos acadêmicos",
-      count: 45,
-      subcategories: [
-        {
-          id: "monografias",
-          name: "Monografias",
-          description: "Trabalhos de pesquisa acadêmica",
-          courses: ["Informática", "Direito", "Mecânica", "Gestão", "Medicina", "Engenharia"],
-        },
-        {
-          id: "tfc",
-          name: "Trabalhos de Final de Curso (TFC)",
-          description: "Projetos de conclusão de curso",
-          courses: ["Informática", "Direito", "Mecânica", "Gestão", "Medicina", "Engenharia"],
-        },
-        {
-          id: "trabalhos-normais",
-          name: "Trabalhos Normais",
-          description: "Trabalhos do dia a dia acadêmico",
-          levels: ["Ensino Médio", "Superior", "Técnico"],
-          subjects: ["Matemática", "História", "Programação", "Física", "Química", "Literatura"],
-        },
-      ],
-    },
-    {
-      id: "outros-documentos",
-      name: "Outros Documentos",
-      icon: FileText,
-      description: "CVs, cartas formais e certificados",
-      count: 25,
-      subcategories: [
-        {
-          id: "cvs",
-          name: "Currículos (CVs)",
-          description: "Modelos de currículo profissional",
-          types: ["Estudante", "Profissional", "Primeiro Emprego", "Executivo"],
-        },
-        {
-          id: "cartas-formais",
-          name: "Cartas Formais",
-          description: "Cartas de recomendação, motivação e pedido",
-          types: ["Recomendação", "Motivação", "Pedido", "Apresentação"],
-        },
-        {
-          id: "certificados-declaracoes",
-          name: "Certificados e Declarações",
-          description: "Documentos oficiais e certificações",
-          types: ["Participação", "Conclusão", "Matrícula", "Frequência"],
-        },
-      ],
-    },
-  ]
+  {
+    id: "trabalhos-escolares",
+    name: "Trabalhos Escolares",
+    icon: BookOpen,
+    description: "Monografias, TFC e trabalhos acadêmicos",
+    count: 45,
+    subcategories: [
+      {
+        id: "monografias",
+        name: "Monografias",
+        description: "Trabalhos de pesquisa acadêmica",
+        courses: ["Informática", "Direito", "Mecânica", "Gestão", "Medicina", "Engenharia"],
+      },
+      {
+        id: "tfc",
+        name: "Trabalhos de Final de Curso (TFC)",
+        description: "Projetos de conclusão de curso",
+        courses: ["Informática", "Direito", "Gestão", "Psicologia", "Educação", "Enfermagem"],
+      },
+      {
+        id: "trabalhos-normais",
+        name: "Trabalhos Normais",
+        description: "Trabalhos do dia a dia acadêmico",
+        levels: ["Ensino Médio", "Superior", "Técnico"],
+        subjects: ["Matemática", "História", "Programação", "Física", "Química", "Literatura"],
+      },
+    ],
+  },
+
+  {
+    id: "declaracoes",
+    name: "Declarações",
+    icon: FileText,
+    description: "Declarações oficiais para fins acadêmicos, profissionais ou bancários",
+    count: 18,
+    subcategories: [
+      {
+        id: "declaracao-rendimento",
+        name: "Declaração de Rendimento",
+        description: "Modelo para comprovar rendimentos para abertura de conta bancária",
+        types: ["Abertura de conta", "Financiamento", "Visto", "Residência"],
+      },
+      {
+        id: "declaracao-cedencia",
+        name: "Declaração de Cedência",
+        description: "Modelo para formalizar cedência de bens, documentos ou equipamentos",
+        types: ["Equipamentos", "Materiais", "Espaços físicos", "Temporária"],
+      },
+      {
+        id: "declaracao-frequencia",
+        name: "Declaração de Frequência",
+        description: "Comprova frequência em instituição de ensino",
+        types: ["Acadêmica", "Emprego", "Institucional"],
+      },
+      {
+        id: "declaracao-residencia",
+        name: "Declaração de Residência",
+        description: "Comprova endereço atual de morada",
+        types: ["Bancária", "Trabalho", "Visto"],
+      },
+    ],
+  },
+
+  {
+    id: "contratos",
+    name: "Contratos",
+    icon: FileText,
+    description: "Modelos de contratos formais para diversas finalidades",
+    count: 22,
+    subcategories: [
+      {
+        id: "contrato-prestacao-servicos",
+        name: "Prestação de Serviços",
+        description: "Acordos entre prestador e cliente",
+        types: ["Design", "Construção", "Consultoria", "Informática", "Eventos"],
+      },
+      {
+        id: "contrato-aluguer",
+        name: "Contrato de Aluguer",
+        description: "Locação de bens móveis ou imóveis",
+        types: ["Casa", "Loja", "Veículo", "Equipamento"],
+      },
+      {
+        id: "contrato-trabalho",
+        name: "Contrato de Trabalho",
+        description: "Formaliza a relação entre empregador e trabalhador",
+        types: ["Tempo Determinado", "Indeterminado", "Freelancer", "Estágio"],
+      },
+    ],
+  },
+
+  {
+    id: "curriculos",
+    name: "Currículos (CVs)",
+    icon: FileText,
+    description: "Modelos de currículo profissional para diferentes perfis",
+    count: 12,
+    subcategories: [
+      {
+        id: "cv-estudante",
+        name: "Estudante / Primeiro Emprego",
+        description: "CV ideal para quem está iniciando no mercado de trabalho",
+        types: ["Universitário", "Recém-formado", "Estágio"],
+      },
+      {
+        id: "cv-profissional",
+        name: "Profissional / Experiente",
+        description: "Modelos otimizados para profissionais com experiência",
+        types: ["Gestão", "Tecnologia", "Saúde", "Educação"],
+      },
+      {
+        id: "cv-executivo",
+        name: "Executivo / Senior",
+        description: "Currículos estratégicos para cargos de liderança e gestão",
+        types: ["Direção", "Administração", "Consultoria"],
+      },
+    ],
+  },
+
+  {
+    id: "outros-documentos",
+    name: "Outros Documentos",
+    icon: FileText,
+    description: "Cartas formais, certificados e autorizações diversas",
+    count: 15,
+    subcategories: [
+      {
+        id: "cartas-formais",
+        name: "Cartas Formais",
+        description: "Cartas de recomendação, motivação e pedido",
+        types: ["Recomendação", "Motivação", "Pedido", "Apresentação"],
+      },
+      {
+        id: "certificados",
+        name: "Certificados",
+        description: "Documentos de conclusão, participação e reconhecimento",
+        types: ["Conclusão", "Participação", "Honra", "Curso"],
+      },
+    ],
+  },
+]
 
   const sampleModels = {
     "monografias-informatica": [
