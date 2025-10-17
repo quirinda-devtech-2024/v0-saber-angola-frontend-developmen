@@ -93,6 +93,8 @@ export function Footer() {
               <li className="flex items-center space-x-2 text-muted-foreground">
                 <Mail className="h-4 w-4" />
                 <span>info@saberangola.ao</span>
+                </li>
+              <li className="flex items-center space-x-2 text-muted-foreground">
                 <span>help@quirindadevtch.ao</span>
               </li>
               <li className="flex items-center space-x-2 text-muted-foreground">
