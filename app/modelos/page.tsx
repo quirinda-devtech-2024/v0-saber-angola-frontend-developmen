@@ -7,27 +7,19 @@ import { Button } from "@/components/ui/button"
 import { ArrowLeft } from "lucide-react"
 import { useState, useEffect } from "react"
 import { FileText } from "lucide-react"
-import { SubcategoryList } from "@/components/modelos/subcategory-list"
-import { SearchFilters } from "@/components/modelos/search-filters"
 import { DynamicForm } from "@/components/modelos/dynamic-form"
-import { documentsService } from "@/services/documents"
-import type { Model, ModelSchema } from "@/types/models"
+import type { ModelSchema } from "@/types/models"
 import { toast, Toaster } from "sonner"
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card"
 import { motion, AnimatePresence } from "framer-motion"
-import { getSchemaById } from "@/services/formSchemas"
+import { getSchemaById, getAllSchemasByCategory } from "@/services/formSchemas"
 
 export default function ModelosPage() {
-  const [currentView, setCurrentView] = useState<"categories" | "subcategories" | "models" | "form">("categories")
+  const [currentView, setCurrentView] = useState<"categories" | "models" | "form">("categories")
   const [currentCategory, setCurrentCategory] = useState<string | null>(null)
-  const [selectedSubcategory, setSelectedSubcategory] = useState<string>("")
-  const [selectedCourse, setSelectedCourse] = useState<string>("all")
-  const [selectedLevel, setSelectedLevel] = useState<string>("all")
-  const [searchQuery, setSearchQuery] = useState<string>("")
-  const [models, setModels] = useState<Model[]>([])
-  const [selectedModelSchema, setSelectedModelSchema] = useState<ModelSchema | null>(null)
+  const [models, setModels] = useState<ModelSchema[]>([])
+  const [selectedModel, setSelectedModel] = useState<ModelSchema | null>(null)
   const [loading, setLoading] = useState(false)
-  const [selectedModel, setSelectedModel] = useState<any>(null)
 
   interface Category {
     id: string
@@ -64,23 +56,21 @@ export default function ModelosPage() {
   ]
 
   useEffect(() => {
-    if (currentView === "models" && selectedSubcategory) {
+    if (currentView === "models" && currentCategory) {
       loadModels()
     }
-  }, [selectedSubcategory, selectedCourse, selectedLevel, searchQuery])
+  }, [currentCategory])
 
   const loadModels = async () => {
+    if (!currentCategory) return
+
     setLoading(true)
     try {
-      const filters = {
-        course: selectedCourse !== "all" ? selectedCourse : undefined,
-        level: selectedLevel !== "all" ? selectedLevel : undefined,
-        search: searchQuery || undefined,
-      }
-      const data = await documentsService.getModels(selectedSubcategory, filters)
-      setModels(data)
+      const schemas = getAllSchemasByCategory(currentCategory)
+      setModels(schemas)
     } catch (error) {
       toast.error("Erro ao carregar modelos")
+      console.error(error)
     } finally {
       setLoading(false)
     }
@@ -88,11 +78,6 @@ export default function ModelosPage() {
 
   const handleCategorySelect = (catId: string) => {
     setCurrentCategory(catId)
-    setCurrentView("models")
-  }
-
-  const handleSubcategorySelect = (subcategoryId: string) => {
-    setSelectedSubcategory(subcategoryId)
     setCurrentView("models")
   }
 
@@ -109,6 +94,7 @@ export default function ModelosPage() {
 
   const handleFormSubmit = async (formData: Record<string, any>) => {
     console.log("📄 Dados do formulário:", formData)
+    toast.success("Documento gerado com sucesso!")
     // TODO: Replace with actual API call when backend is ready
     // const response = await documentsService.submitForm(selectedModel.id, formData)
     // window.open(response.download_url, "_blank")
@@ -117,23 +103,16 @@ export default function ModelosPage() {
   const handleBack = () => {
     if (currentView === "form") {
       setCurrentView("models")
-      setSelectedModelSchema(null)
+      setSelectedModel(null)
     } else if (currentView === "models") {
-      setCurrentView("subcategories")
-      setSelectedSubcategory("")
-    } else if (currentView === "subcategories") {
       setCurrentView("categories")
-      setCurrentCategory("") // Declared variable here
+      setCurrentCategory(null)
+      setModels([])
     }
   }
 
   const getCurrentCategory = () => {
     return categories.find((cat) => cat.id === currentCategory)
-  }
-
-  const getCurrentSubcategory = () => {
-    const category = getCurrentCategory()
-    return category?.subcategories.find((sub) => sub.id === selectedSubcategory)
   }
 
   return (
@@ -156,31 +135,16 @@ export default function ModelosPage() {
               <div className="text-center space-y-2">
                 <h1 className="text-3xl md:text-4xl font-bold text-balance">
                   {currentView === "categories" && "Modelos prontos para ti"}
-                  {currentView === "subcategories" && getCurrentCategory()?.name}
-                  {currentView === "models" && getCurrentSubcategory()?.name}
+                  {currentView === "models" && getCurrentCategory()?.name}
                   {currentView === "form" && "Preencher Documento"}
                 </h1>
                 <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
                   {currentView === "categories" &&
                     "Encontra rapidamente o documento que precisas, de monografias a contratos profissionais"}
-                  {currentView === "subcategories" && getCurrentCategory()?.description}
-                  {currentView === "models" && getCurrentSubcategory()?.description}
+                  {currentView === "models" && getCurrentCategory()?.description}
                   {currentView === "form" && "Preencha os campos abaixo para gerar seu documento personalizado"}
                 </p>
               </div>
-
-              {/* Search and Filters - only show in models view */}
-              {currentView === "models" && getCurrentSubcategory() && (
-                <SearchFilters
-                  subcategory={getCurrentSubcategory()!}
-                  selectedCourse={selectedCourse}
-                  selectedLevel={selectedLevel}
-                  searchQuery={searchQuery}
-                  onCourseChange={setSelectedCourse}
-                  onLevelChange={setSelectedLevel}
-                  onSearchChange={setSearchQuery}
-                />
-              )}
             </div>
           </div>
         </section>
@@ -199,8 +163,8 @@ export default function ModelosPage() {
                   className="space-y-6"
                 >
                   <div className="text-center space-y-2 mb-8">
-                    <h1 className="text-3xl md:text-4xl font-bold text-balance">Biblioteca de Modelos</h1>
-                    <p className="text-lg text-muted-foreground">Escolha a categoria do documento que precisa criar</p>
+                    <h2 className="text-2xl font-semibold">Biblioteca de Modelos</h2>
+                    <p className="text-muted-foreground">Escolha a categoria do documento que precisa criar</p>
                   </div>
 
                   <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -226,11 +190,6 @@ export default function ModelosPage() {
               </AnimatePresence>
             )}
 
-            {/* Subcategories View */}
-            {currentView === "subcategories" && (
-              <SubcategoryList subcategories={[]} onSelect={handleSubcategorySelect} />
-            )}
-
             {/* Models View */}
             {currentView === "models" && (
               <AnimatePresence mode="wait">
@@ -247,28 +206,38 @@ export default function ModelosPage() {
                     <p className="text-muted-foreground">Selecione o modelo que deseja utilizar</p>
                   </div>
 
-                  <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {models.map((model: any) => (
-                      <motion.div
-                        key={model.id}
-                        whileHover={{ scale: 1.02 }}
-                        transition={{ type: "spring", stiffness: 300 }}
-                      >
-                        <Card
-                          onClick={() => handleModelSelect(model.id)}
-                          className="cursor-pointer hover:shadow-lg transition border border-gray-200 h-full"
+                  {loading ? (
+                    <div className="text-center py-12">
+                      <p className="text-muted-foreground">Carregando modelos...</p>
+                    </div>
+                  ) : models.length === 0 ? (
+                    <div className="text-center py-12">
+                      <p className="text-muted-foreground">Nenhum modelo disponível nesta categoria</p>
+                    </div>
+                  ) : (
+                    <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                      {models.map((model) => (
+                        <motion.div
+                          key={model.id}
+                          whileHover={{ scale: 1.02 }}
+                          transition={{ type: "spring", stiffness: 300 }}
                         >
-                          <CardHeader>
-                            <CardTitle className="text-lg">{model.title}</CardTitle>
-                            <CardDescription>Documento {model.output_type.toUpperCase()}</CardDescription>
-                          </CardHeader>
-                          <CardContent>
-                            <FileText className="h-8 w-8 text-primary" />
-                          </CardContent>
-                        </Card>
-                      </motion.div>
-                    ))}
-                  </div>
+                          <Card
+                            onClick={() => handleModelSelect(model.id)}
+                            className="cursor-pointer hover:shadow-lg transition border border-gray-200 h-full"
+                          >
+                            <CardHeader>
+                              <CardTitle className="text-lg">{model.title}</CardTitle>
+                              <CardDescription>Documento {model.output_type.toUpperCase()}</CardDescription>
+                            </CardHeader>
+                            <CardContent>
+                              <FileText className="h-8 w-8 text-primary" />
+                            </CardContent>
+                          </Card>
+                        </motion.div>
+                      ))}
+                    </div>
+                  )}
                 </motion.div>
               </AnimatePresence>
             )}
