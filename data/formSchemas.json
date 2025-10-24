@@ -1,0 +1,199 @@
+{
+  "trabalhos-academicos": [
+    {
+      "id": 1,
+      "title": "Monografia - Modelo Padrão",
+      "output_type": "docx",
+      "fields": [
+        {
+          "name": "titulo",
+          "label": "Título da Monografia",
+          "type": "text",
+          "required": true,
+          "placeholder": "Ex: Impacto da IA na Educação"
+        },
+        { "name": "autor", "label": "Nome do Autor", "type": "text", "required": true },
+        {
+          "name": "curso",
+          "label": "Curso",
+          "type": "select",
+          "options": ["Informática", "Gestão", "Direito", "Psicologia", "Engenharia", "Medicina"],
+          "required": true
+        },
+        { "name": "instituicao", "label": "Instituição", "type": "text", "required": true },
+        { "name": "orientador", "label": "Orientador", "type": "text" },
+        { "name": "ano", "label": "Ano de Conclusão", "type": "number", "required": true }
+      ]
+    },
+    {
+      "id": 2,
+      "title": "Trabalho Final de Curso (TFC)",
+      "output_type": "docx",
+      "fields": [
+        { "name": "tema", "label": "Tema do TFC", "type": "text", "required": true },
+        { "name": "autor", "label": "Nome do Estudante", "type": "text", "required": true },
+        { "name": "supervisor", "label": "Supervisor", "type": "text" },
+        { "name": "departamento", "label": "Departamento", "type": "text" },
+        { "name": "ano_lectivo", "label": "Ano Lectivo", "type": "text", "placeholder": "2024/2025" }
+      ]
+    },
+    {
+      "id": 3,
+      "title": "Relatório de Estágio",
+      "output_type": "docx",
+      "fields": [
+        { "name": "empresa", "label": "Empresa / Instituição", "type": "text", "required": true },
+        {
+          "name": "periodo",
+          "label": "Período do Estágio",
+          "type": "text",
+          "placeholder": "Janeiro - Março 2025",
+          "required": true
+        },
+        { "name": "funcoes", "label": "Funções Desempenhadas", "type": "textarea", "required": true },
+        { "name": "supervisor", "label": "Supervisor na Empresa", "type": "text" }
+      ]
+    }
+  ],
+  "declaracoes": [
+    {
+      "id": 4,
+      "title": "Declaração de Matrícula",
+      "output_type": "pdf",
+      "fields": [
+        { "name": "nome_estudante", "label": "Nome do Estudante", "type": "text", "required": true },
+        { "name": "curso", "label": "Curso", "type": "text", "required": true },
+        { "name": "ano_lectivo", "label": "Ano Lectivo", "type": "text", "required": true },
+        { "name": "instituicao", "label": "Instituição", "type": "text" },
+        { "name": "data_emissao", "label": "Data de Emissão", "type": "date", "required": true }
+      ]
+    },
+    {
+      "id": 5,
+      "title": "Declaração de Residência",
+      "output_type": "pdf",
+      "fields": [
+        { "name": "nome", "label": "Nome do Declarante", "type": "text", "required": true },
+        { "name": "endereco", "label": "Endereço Completo", "type": "text", "required": true },
+        { "name": "bairro", "label": "Bairro", "type": "text" },
+        { "name": "municipio", "label": "Município", "type": "text" },
+        { "name": "data_emissao", "label": "Data de Emissão", "type": "date", "required": true }
+      ]
+    },
+    {
+      "id": 6,
+      "title": "Declaração de Frequência",
+      "output_type": "pdf",
+      "fields": [
+        { "name": "nome_estudante", "label": "Nome do Estudante", "type": "text", "required": true },
+        { "name": "curso", "label": "Curso", "type": "text" },
+        { "name": "instituicao", "label": "Instituição de Ensino", "type": "text", "required": true },
+        { "name": "periodo", "label": "Período Frequentado", "type": "text" },
+        { "name": "data_emissao", "label": "Data de Emissão", "type": "date" }
+      ]
+    }
+  ],
+  "contratos": [
+    {
+      "id": 7,
+      "title": "Contrato de Trabalho",
+      "output_type": "docx",
+      "fields": [
+        { "name": "empregador", "label": "Nome do Empregador", "type": "text", "required": true },
+        { "name": "funcionario", "label": "Nome do Funcionário", "type": "text", "required": true },
+        { "name": "cargo", "label": "Cargo", "type": "text" },
+        { "name": "salario", "label": "Salário Mensal (AOA)", "type": "number" },
+        { "name": "data_inicio", "label": "Data de Início", "type": "date" },
+        { "name": "data_fim", "label": "Data de Término", "type": "date" }
+      ]
+    },
+    {
+      "id": 8,
+      "title": "Contrato de Prestação de Serviços",
+      "output_type": "docx",
+      "fields": [
+        { "name": "prestador", "label": "Nome do Prestador", "type": "text", "required": true },
+        { "name": "cliente", "label": "Nome do Cliente", "type": "text", "required": true },
+        { "name": "descricao_servico", "label": "Descrição do Serviço", "type": "textarea", "required": true },
+        { "name": "valor", "label": "Valor do Serviço (AOA)", "type": "number", "required": true },
+        { "name": "data_inicio", "label": "Data de Início", "type": "date" },
+        { "name": "data_fim", "label": "Data de Conclusão", "type": "date" }
+      ]
+    },
+    {
+      "id": 9,
+      "title": "Contrato de Aluguer",
+      "output_type": "docx",
+      "fields": [
+        { "name": "locador", "label": "Nome do Locador", "type": "text", "required": true },
+        { "name": "locatario", "label": "Nome do Locatário", "type": "text", "required": true },
+        { "name": "objeto", "label": "Objeto do Aluguer", "type": "text", "required": true },
+        { "name": "valor_mensal", "label": "Valor Mensal (AOA)", "type": "number" },
+        { "name": "prazo", "label": "Prazo do Contrato", "type": "text", "placeholder": "Ex: 12 meses" }
+      ]
+    }
+  ],
+  "curriculos": [
+    {
+      "id": 10,
+      "title": "Currículo Estudante",
+      "output_type": "pdf",
+      "fields": [
+        { "name": "nome", "label": "Nome Completo", "type": "text", "required": true },
+        { "name": "email", "label": "Email", "type": "text", "required": true },
+        { "name": "telefone", "label": "Telefone", "type": "text" },
+        { "name": "curso", "label": "Curso", "type": "text" },
+        { "name": "objetivo", "label": "Objetivo Profissional", "type": "textarea" },
+        { "name": "habilidades", "label": "Principais Habilidades", "type": "textarea" }
+      ]
+    },
+    {
+      "id": 11,
+      "title": "Currículo Profissional",
+      "output_type": "pdf",
+      "fields": [
+        { "name": "nome", "label": "Nome Completo", "type": "text", "required": true },
+        { "name": "email", "label": "Email Profissional", "type": "text", "required": true },
+        { "name": "experiencia", "label": "Experiências Profissionais", "type": "textarea", "required": true },
+        { "name": "formacao", "label": "Formação Acadêmica", "type": "textarea", "required": true },
+        { "name": "habilidades", "label": "Habilidades Técnicas", "type": "textarea" }
+      ]
+    },
+    {
+      "id": 12,
+      "title": "Carta de Motivação",
+      "output_type": "pdf",
+      "fields": [
+        { "name": "nome", "label": "Nome do Candidato", "type": "text", "required": true },
+        { "name": "empresa_destino", "label": "Empresa / Instituição de Destino", "type": "text" },
+        { "name": "texto_motivacional", "label": "Texto da Carta", "type": "textarea", "required": true },
+        { "name": "data", "label": "Data", "type": "date" }
+      ]
+    }
+  ],
+  "outros-documentos": [
+    {
+      "id": 13,
+      "title": "Carta Formal de Pedido",
+      "output_type": "pdf",
+      "fields": [
+        { "name": "remetente", "label": "Remetente", "type": "text", "required": true },
+        { "name": "destinatario", "label": "Destinatário", "type": "text", "required": true },
+        { "name": "assunto", "label": "Assunto da Carta", "type": "text", "required": true },
+        { "name": "corpo", "label": "Corpo do Texto", "type": "textarea", "required": true },
+        { "name": "data", "label": "Data", "type": "date" }
+      ]
+    },
+    {
+      "id": 14,
+      "title": "Certificado de Participação",
+      "output_type": "pdf",
+      "fields": [
+        { "name": "nome_participante", "label": "Nome do Participante", "type": "text", "required": true },
+        { "name": "evento", "label": "Nome do Evento / Curso", "type": "text", "required": true },
+        { "name": "instituicao", "label": "Instituição Emissora", "type": "text" },
+        { "name": "data_conclusao", "label": "Data de Conclusão", "type": "date", "required": true }
+      ]
+    }
+  ]
+}

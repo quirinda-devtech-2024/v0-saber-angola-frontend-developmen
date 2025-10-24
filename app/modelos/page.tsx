@@ -6,19 +6,20 @@ import { FloatingContactButton } from "@/components/ui/floating-contact-button"
 import { Button } from "@/components/ui/button"
 import { ArrowLeft } from "lucide-react"
 import { useState, useEffect } from "react"
-import { BookOpen, FileText } from "lucide-react"
-import { CategoryList } from "@/components/modelos/category-list"
+import { FileText } from "lucide-react"
 import { SubcategoryList } from "@/components/modelos/subcategory-list"
-import { ModelList } from "@/components/modelos/model-list"
 import { SearchFilters } from "@/components/modelos/search-filters"
 import { DynamicForm } from "@/components/modelos/dynamic-form"
 import { documentsService } from "@/services/documents"
-import type { Category, Model, ModelSchema } from "@/types/models"
-import { toast } from "sonner"
+import type { Model, ModelSchema } from "@/types/models"
+import { toast, Toaster } from "sonner"
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card"
+import { motion, AnimatePresence } from "framer-motion"
+import { getSchemaById } from "@/services/formSchemas"
 
 export default function ModelosPage() {
   const [currentView, setCurrentView] = useState<"categories" | "subcategories" | "models" | "form">("categories")
-  const [selectedCategory, setSelectedCategory] = useState<string>("")
+  const [currentCategory, setCurrentCategory] = useState<string | null>(null)
   const [selectedSubcategory, setSelectedSubcategory] = useState<string>("")
   const [selectedCourse, setSelectedCourse] = useState<string>("all")
   const [selectedLevel, setSelectedLevel] = useState<string>("all")
@@ -26,119 +27,39 @@ export default function ModelosPage() {
   const [models, setModels] = useState<Model[]>([])
   const [selectedModelSchema, setSelectedModelSchema] = useState<ModelSchema | null>(null)
   const [loading, setLoading] = useState(false)
+  const [selectedModel, setSelectedModel] = useState<any>(null)
 
-  const mainCategories: Category[] = [
+  interface Category {
+    id: string
+    name: string
+    description: string
+  }
+
+  const categories: Category[] = [
     {
-      id: "trabalhos-escolares",
-      name: "Trabalhos Escolares",
-      icon: BookOpen,
-      description: "Monografias, TFC e trabalhos acadêmicos",
-      count: 45,
-      subcategories: [
-        {
-          id: "monografias",
-          name: "Monografias",
-          description: "Trabalhos de pesquisa acadêmica",
-          courses: ["Informática", "Direito", "Mecânica", "Gestão", "Medicina", "Engenharia"],
-        },
-        {
-          id: "tfc",
-          name: "Trabalhos de Final de Curso (TFC)",
-          description: "Projetos de conclusão de curso",
-          courses: ["Informática", "Direito", "Gestão", "Psicologia", "Educação", "Enfermagem"],
-        },
-        {
-          id: "trabalhos-normais",
-          name: "Trabalhos Normais",
-          description: "Trabalhos do dia a dia acadêmico",
-          levels: ["Ensino Médio", "Superior", "Técnico"],
-          subjects: ["Matemática", "História", "Programação", "Física", "Química", "Literatura"],
-        },
-      ],
+      id: "trabalhos-academicos",
+      name: "Trabalhos Acadêmicos",
+      description: "Monografias, relatórios, TFCs",
     },
     {
       id: "declaracoes",
       name: "Declarações",
-      icon: FileText,
-      description: "Declarações oficiais para fins acadêmicos, profissionais ou bancários",
-      count: 18,
-      subcategories: [
-        {
-          id: "declaracao-rendimento",
-          name: "Declaração de Rendimento",
-          description: "Modelo para comprovar rendimentos para abertura de conta bancária",
-          types: ["Abertura de conta", "Financiamento", "Visto", "Residência"],
-        },
-        {
-          id: "declaracao-cedencia",
-          name: "Declaração de Cedência",
-          description: "Modelo para formalizar cedência de bens, documentos ou equipamentos",
-          types: ["Equipamentos", "Materiais", "Espaços físicos", "Temporária"],
-        },
-      ],
+      description: "Documentos formais e comprovações",
     },
     {
       id: "contratos",
       name: "Contratos",
-      icon: FileText,
-      description: "Modelos de contratos formais para diversas finalidades",
-      count: 22,
-      subcategories: [
-        {
-          id: "contrato-prestacao-servicos",
-          name: "Prestação de Serviços",
-          description: "Acordos entre prestador e cliente",
-          types: ["Design", "Construção", "Consultoria", "Informática", "Eventos"],
-        },
-        {
-          id: "contrato-aluguer",
-          name: "Contrato de Aluguer",
-          description: "Locação de bens móveis ou imóveis",
-          types: ["Casa", "Loja", "Veículo", "Equipamento"],
-        },
-      ],
+      description: "Modelos de contratos profissionais",
     },
     {
       id: "curriculos",
-      name: "Currículos (CVs)",
-      icon: FileText,
-      description: "Modelos de currículo profissional para diferentes perfis",
-      count: 12,
-      subcategories: [
-        {
-          id: "cv-estudante",
-          name: "Estudante / Primeiro Emprego",
-          description: "CV ideal para quem está iniciando no mercado de trabalho",
-          types: ["Universitário", "Recém-formado", "Estágio"],
-        },
-        {
-          id: "cv-profissional",
-          name: "Profissional / Experiente",
-          description: "Modelos otimizados para profissionais com experiência",
-          types: ["Gestão", "Tecnologia", "Saúde", "Educação"],
-        },
-      ],
+      name: "Currículos e Cartas",
+      description: "CVs e cartas personalizadas",
     },
     {
       id: "outros-documentos",
       name: "Outros Documentos",
-      icon: FileText,
-      description: "Cartas formais, certificados e autorizações diversas",
-      count: 15,
-      subcategories: [
-        {
-          id: "cartas-formais",
-          name: "Cartas Formais",
-          description: "Cartas de recomendação, motivação e pedido",
-          types: ["Recomendação", "Motivação", "Pedido", "Apresentação"],
-        },
-        {
-          id: "certificados",
-          name: "Certificados",
-          description: "Documentos de conclusão, participação e reconhecimento",
-          types: ["Conclusão", "Participação", "Honra", "Curso"],
-        },
-      ],
+      description: "Cartas formais, certificados, etc.",
     },
   ]
 
@@ -165,9 +86,9 @@ export default function ModelosPage() {
     }
   }
 
-  const handleCategorySelect = (categoryId: string) => {
-    setSelectedCategory(categoryId)
-    setCurrentView("subcategories")
+  const handleCategorySelect = (catId: string) => {
+    setCurrentCategory(catId)
+    setCurrentView("models")
   }
 
   const handleSubcategorySelect = (subcategoryId: string) => {
@@ -175,31 +96,22 @@ export default function ModelosPage() {
     setCurrentView("models")
   }
 
-  const handleModelSelect = async (modelId: number) => {
-    setLoading(true)
-    try {
-      const schema = await documentsService.getSchema(modelId)
-      setSelectedModelSchema(schema)
+  const handleModelSelect = (modelId: number) => {
+    if (!currentCategory) return
+    const schema = getSchemaById(currentCategory, modelId)
+    if (schema) {
+      setSelectedModel(schema)
       setCurrentView("form")
-    } catch (error) {
-      toast.error("Erro ao carregar formulário")
-    } finally {
-      setLoading(false)
+    } else {
+      toast.error("Modelo não encontrado")
     }
   }
 
   const handleFormSubmit = async (formData: Record<string, any>) => {
-    if (!selectedModelSchema) return
-
-    try {
-      const response = await documentsService.submitForm(selectedModelSchema.id, formData)
-      toast.success("Documento gerado com sucesso!")
-      window.open(response.download_url, "_blank")
-      setCurrentView("models")
-      setSelectedModelSchema(null)
-    } catch (error) {
-      toast.error("Erro ao gerar documento")
-    }
+    console.log("📄 Dados do formulário:", formData)
+    // TODO: Replace with actual API call when backend is ready
+    // const response = await documentsService.submitForm(selectedModel.id, formData)
+    // window.open(response.download_url, "_blank")
   }
 
   const handleBack = () => {
@@ -211,12 +123,12 @@ export default function ModelosPage() {
       setSelectedSubcategory("")
     } else if (currentView === "subcategories") {
       setCurrentView("categories")
-      setSelectedCategory("")
+      setCurrentCategory("") // Declared variable here
     }
   }
 
   const getCurrentCategory = () => {
-    return mainCategories.find((cat) => cat.id === selectedCategory)
+    return categories.find((cat) => cat.id === currentCategory)
   }
 
   const getCurrentSubcategory = () => {
@@ -227,6 +139,7 @@ export default function ModelosPage() {
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
+      <Toaster position="top-center" />
 
       <main className="flex-1">
         {/* Hero Section */}
@@ -276,20 +189,93 @@ export default function ModelosPage() {
           <div className="container max-w-7xl mx-auto">
             {/* Main Categories View */}
             {currentView === "categories" && (
-              <CategoryList categories={mainCategories} onSelect={handleCategorySelect} />
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key="categories"
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  transition={{ duration: 0.3 }}
+                  className="space-y-6"
+                >
+                  <div className="text-center space-y-2 mb-8">
+                    <h1 className="text-3xl md:text-4xl font-bold text-balance">Biblioteca de Modelos</h1>
+                    <p className="text-lg text-muted-foreground">Escolha a categoria do documento que precisa criar</p>
+                  </div>
+
+                  <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {categories.map((cat) => (
+                      <motion.div
+                        key={cat.id}
+                        whileHover={{ scale: 1.03 }}
+                        transition={{ type: "spring", stiffness: 200 }}
+                      >
+                        <Card
+                          className="cursor-pointer hover:shadow-lg transition h-full"
+                          onClick={() => handleCategorySelect(cat.id)}
+                        >
+                          <CardHeader>
+                            <CardTitle>{cat.name}</CardTitle>
+                            <CardDescription>{cat.description}</CardDescription>
+                          </CardHeader>
+                        </Card>
+                      </motion.div>
+                    ))}
+                  </div>
+                </motion.div>
+              </AnimatePresence>
             )}
 
             {/* Subcategories View */}
-            {currentView === "subcategories" && getCurrentCategory() && (
-              <SubcategoryList subcategories={getCurrentCategory()!.subcategories} onSelect={handleSubcategorySelect} />
+            {currentView === "subcategories" && (
+              <SubcategoryList subcategories={[]} onSelect={handleSubcategorySelect} />
             )}
 
             {/* Models View */}
-            {currentView === "models" && <ModelList models={models} onSelect={handleModelSelect} />}
+            {currentView === "models" && (
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key="models"
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  transition={{ duration: 0.3 }}
+                  className="space-y-6"
+                >
+                  <div className="text-center space-y-2 mb-8">
+                    <h2 className="text-2xl font-semibold">Modelos disponíveis</h2>
+                    <p className="text-muted-foreground">Selecione o modelo que deseja utilizar</p>
+                  </div>
+
+                  <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {models.map((model: any) => (
+                      <motion.div
+                        key={model.id}
+                        whileHover={{ scale: 1.02 }}
+                        transition={{ type: "spring", stiffness: 300 }}
+                      >
+                        <Card
+                          onClick={() => handleModelSelect(model.id)}
+                          className="cursor-pointer hover:shadow-lg transition border border-gray-200 h-full"
+                        >
+                          <CardHeader>
+                            <CardTitle className="text-lg">{model.title}</CardTitle>
+                            <CardDescription>Documento {model.output_type.toUpperCase()}</CardDescription>
+                          </CardHeader>
+                          <CardContent>
+                            <FileText className="h-8 w-8 text-primary" />
+                          </CardContent>
+                        </Card>
+                      </motion.div>
+                    ))}
+                  </div>
+                </motion.div>
+              </AnimatePresence>
+            )}
 
             {/* Dynamic Form View */}
-            {currentView === "form" && selectedModelSchema && (
-              <DynamicForm schema={selectedModelSchema} onSubmit={handleFormSubmit} onBack={handleBack} />
+            {currentView === "form" && selectedModel && (
+              <DynamicForm schema={selectedModel} onSubmit={handleFormSubmit} onBack={handleBack} />
             )}
           </div>
         </section>
