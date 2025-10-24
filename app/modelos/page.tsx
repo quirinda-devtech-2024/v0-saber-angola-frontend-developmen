@@ -4,195 +4,165 @@ import { Header } from "@/components/navigation/header"
 import { Footer } from "@/components/navigation/footer"
 import { FloatingContactButton } from "@/components/ui/floating-contact-button"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { Input } from "@/components/ui/input"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Search, Download, Eye, Star, FileText, BookOpen, ChevronRight, ArrowLeft } from "lucide-react"
-import { useState } from "react"
+import { ArrowLeft } from "lucide-react"
+import { useState, useEffect } from "react"
+import { BookOpen, FileText } from "lucide-react"
+import { CategoryList } from "@/components/modelos/category-list"
+import { SubcategoryList } from "@/components/modelos/subcategory-list"
+import { ModelList } from "@/components/modelos/model-list"
+import { SearchFilters } from "@/components/modelos/search-filters"
+import { DynamicForm } from "@/components/modelos/dynamic-form"
+import { documentsService } from "@/services/documents"
+import type { Category, Model, ModelSchema } from "@/types/models"
+import { toast } from "sonner"
 
 export default function ModelosPage() {
-  const [currentView, setCurrentView] = useState<"categories" | "subcategories" | "models">("categories")
+  const [currentView, setCurrentView] = useState<"categories" | "subcategories" | "models" | "form">("categories")
   const [selectedCategory, setSelectedCategory] = useState<string>("")
   const [selectedSubcategory, setSelectedSubcategory] = useState<string>("")
-  const [selectedCourse, setSelectedCourse] = useState<string>("")
-  const [selectedLevel, setSelectedLevel] = useState<string>("")
+  const [selectedCourse, setSelectedCourse] = useState<string>("all")
+  const [selectedLevel, setSelectedLevel] = useState<string>("all")
+  const [searchQuery, setSearchQuery] = useState<string>("")
+  const [models, setModels] = useState<Model[]>([])
+  const [selectedModelSchema, setSelectedModelSchema] = useState<ModelSchema | null>(null)
+  const [loading, setLoading] = useState(false)
 
-  const mainCategories = [
-  {
-    id: "trabalhos-escolares",
-    name: "Trabalhos Escolares",
-    icon: BookOpen,
-    description: "Monografias, TFC e trabalhos acadêmicos",
-    count: 45,
-    subcategories: [
-      {
-        id: "monografias",
-        name: "Monografias",
-        description: "Trabalhos de pesquisa acadêmica",
-        courses: ["Informática", "Direito", "Mecânica", "Gestão", "Medicina", "Engenharia"],
-      },
-      {
-        id: "tfc",
-        name: "Trabalhos de Final de Curso (TFC)",
-        description: "Projetos de conclusão de curso",
-        courses: ["Informática", "Direito", "Gestão", "Psicologia", "Educação", "Enfermagem"],
-      },
-      {
-        id: "trabalhos-normais",
-        name: "Trabalhos Normais",
-        description: "Trabalhos do dia a dia acadêmico",
-        levels: ["Ensino Médio", "Superior", "Técnico"],
-        subjects: ["Matemática", "História", "Programação", "Física", "Química", "Literatura"],
-      },
-    ],
-  },
+  const mainCategories: Category[] = [
+    {
+      id: "trabalhos-escolares",
+      name: "Trabalhos Escolares",
+      icon: BookOpen,
+      description: "Monografias, TFC e trabalhos acadêmicos",
+      count: 45,
+      subcategories: [
+        {
+          id: "monografias",
+          name: "Monografias",
+          description: "Trabalhos de pesquisa acadêmica",
+          courses: ["Informática", "Direito", "Mecânica", "Gestão", "Medicina", "Engenharia"],
+        },
+        {
+          id: "tfc",
+          name: "Trabalhos de Final de Curso (TFC)",
+          description: "Projetos de conclusão de curso",
+          courses: ["Informática", "Direito", "Gestão", "Psicologia", "Educação", "Enfermagem"],
+        },
+        {
+          id: "trabalhos-normais",
+          name: "Trabalhos Normais",
+          description: "Trabalhos do dia a dia acadêmico",
+          levels: ["Ensino Médio", "Superior", "Técnico"],
+          subjects: ["Matemática", "História", "Programação", "Física", "Química", "Literatura"],
+        },
+      ],
+    },
+    {
+      id: "declaracoes",
+      name: "Declarações",
+      icon: FileText,
+      description: "Declarações oficiais para fins acadêmicos, profissionais ou bancários",
+      count: 18,
+      subcategories: [
+        {
+          id: "declaracao-rendimento",
+          name: "Declaração de Rendimento",
+          description: "Modelo para comprovar rendimentos para abertura de conta bancária",
+          types: ["Abertura de conta", "Financiamento", "Visto", "Residência"],
+        },
+        {
+          id: "declaracao-cedencia",
+          name: "Declaração de Cedência",
+          description: "Modelo para formalizar cedência de bens, documentos ou equipamentos",
+          types: ["Equipamentos", "Materiais", "Espaços físicos", "Temporária"],
+        },
+      ],
+    },
+    {
+      id: "contratos",
+      name: "Contratos",
+      icon: FileText,
+      description: "Modelos de contratos formais para diversas finalidades",
+      count: 22,
+      subcategories: [
+        {
+          id: "contrato-prestacao-servicos",
+          name: "Prestação de Serviços",
+          description: "Acordos entre prestador e cliente",
+          types: ["Design", "Construção", "Consultoria", "Informática", "Eventos"],
+        },
+        {
+          id: "contrato-aluguer",
+          name: "Contrato de Aluguer",
+          description: "Locação de bens móveis ou imóveis",
+          types: ["Casa", "Loja", "Veículo", "Equipamento"],
+        },
+      ],
+    },
+    {
+      id: "curriculos",
+      name: "Currículos (CVs)",
+      icon: FileText,
+      description: "Modelos de currículo profissional para diferentes perfis",
+      count: 12,
+      subcategories: [
+        {
+          id: "cv-estudante",
+          name: "Estudante / Primeiro Emprego",
+          description: "CV ideal para quem está iniciando no mercado de trabalho",
+          types: ["Universitário", "Recém-formado", "Estágio"],
+        },
+        {
+          id: "cv-profissional",
+          name: "Profissional / Experiente",
+          description: "Modelos otimizados para profissionais com experiência",
+          types: ["Gestão", "Tecnologia", "Saúde", "Educação"],
+        },
+      ],
+    },
+    {
+      id: "outros-documentos",
+      name: "Outros Documentos",
+      icon: FileText,
+      description: "Cartas formais, certificados e autorizações diversas",
+      count: 15,
+      subcategories: [
+        {
+          id: "cartas-formais",
+          name: "Cartas Formais",
+          description: "Cartas de recomendação, motivação e pedido",
+          types: ["Recomendação", "Motivação", "Pedido", "Apresentação"],
+        },
+        {
+          id: "certificados",
+          name: "Certificados",
+          description: "Documentos de conclusão, participação e reconhecimento",
+          types: ["Conclusão", "Participação", "Honra", "Curso"],
+        },
+      ],
+    },
+  ]
 
-  {
-    id: "declaracoes",
-    name: "Declarações",
-    icon: FileText,
-    description: "Declarações oficiais para fins acadêmicos, profissionais ou bancários",
-    count: 18,
-    subcategories: [
-      {
-        id: "declaracao-rendimento",
-        name: "Declaração de Rendimento",
-        description: "Modelo para comprovar rendimentos para abertura de conta bancária",
-        types: ["Abertura de conta", "Financiamento", "Visto", "Residência"],
-      },
-      {
-        id: "declaracao-cedencia",
-        name: "Declaração de Cedência",
-        description: "Modelo para formalizar cedência de bens, documentos ou equipamentos",
-        types: ["Equipamentos", "Materiais", "Espaços físicos", "Temporária"],
-      },
-      {
-        id: "declaracao-frequencia",
-        name: "Declaração de Frequência",
-        description: "Comprova frequência em instituição de ensino",
-        types: ["Acadêmica", "Emprego", "Institucional"],
-      },
-      {
-        id: "declaracao-residencia",
-        name: "Declaração de Residência",
-        description: "Comprova endereço atual de morada",
-        types: ["Bancária", "Trabalho", "Visto"],
-      },
-    ],
-  },
+  useEffect(() => {
+    if (currentView === "models" && selectedSubcategory) {
+      loadModels()
+    }
+  }, [selectedSubcategory, selectedCourse, selectedLevel, searchQuery])
 
-  {
-    id: "contratos",
-    name: "Contratos",
-    icon: FileText,
-    description: "Modelos de contratos formais para diversas finalidades",
-    count: 22,
-    subcategories: [
-      {
-        id: "contrato-prestacao-servicos",
-        name: "Prestação de Serviços",
-        description: "Acordos entre prestador e cliente",
-        types: ["Design", "Construção", "Consultoria", "Informática", "Eventos"],
-      },
-      {
-        id: "contrato-aluguer",
-        name: "Contrato de Aluguer",
-        description: "Locação de bens móveis ou imóveis",
-        types: ["Casa", "Loja", "Veículo", "Equipamento"],
-      },
-      {
-        id: "contrato-trabalho",
-        name: "Contrato de Trabalho",
-        description: "Formaliza a relação entre empregador e trabalhador",
-        types: ["Tempo Determinado", "Indeterminado", "Freelancer", "Estágio"],
-      },
-    ],
-  },
-
-  {
-    id: "curriculos",
-    name: "Currículos (CVs)",
-    icon: FileText,
-    description: "Modelos de currículo profissional para diferentes perfis",
-    count: 12,
-    subcategories: [
-      {
-        id: "cv-estudante",
-        name: "Estudante / Primeiro Emprego",
-        description: "CV ideal para quem está iniciando no mercado de trabalho",
-        types: ["Universitário", "Recém-formado", "Estágio"],
-      },
-      {
-        id: "cv-profissional",
-        name: "Profissional / Experiente",
-        description: "Modelos otimizados para profissionais com experiência",
-        types: ["Gestão", "Tecnologia", "Saúde", "Educação"],
-      },
-      {
-        id: "cv-executivo",
-        name: "Executivo / Senior",
-        description: "Currículos estratégicos para cargos de liderança e gestão",
-        types: ["Direção", "Administração", "Consultoria"],
-      },
-    ],
-  },
-
-  {
-    id: "outros-documentos",
-    name: "Outros Documentos",
-    icon: FileText,
-    description: "Cartas formais, certificados e autorizações diversas",
-    count: 15,
-    subcategories: [
-      {
-        id: "cartas-formais",
-        name: "Cartas Formais",
-        description: "Cartas de recomendação, motivação e pedido",
-        types: ["Recomendação", "Motivação", "Pedido", "Apresentação"],
-      },
-      {
-        id: "certificados",
-        name: "Certificados",
-        description: "Documentos de conclusão, participação e reconhecimento",
-        types: ["Conclusão", "Participação", "Honra", "Curso"],
-      },
-    ],
-  },
-]
-
-  const sampleModels = {
-    "monografias-informatica": [
-      {
-        id: 1,
-        title: "Monografia em Informática - Formato ABNT",
-        description: "Estrutura completa para monografia em Informática seguindo normas ABNT",
-        course: "Informática",
-        downloads: 1234,
-        rating: 4.8,
-        preview: "/academic-thesis-template.jpg",
-      },
-      {
-        id: 2,
-        title: "Monografia em Informática - Formato Simples",
-        description: "Modelo simplificado para monografia em Informática",
-        course: "Informática",
-        downloads: 987,
-        rating: 4.6,
-        preview: "/academic-thesis-template.jpg",
-      },
-    ],
-    "cvs-estudante": [
-      {
-        id: 3,
-        title: "CV Estudante Universitário",
-        description: "Currículo otimizado para estudantes sem experiência profissional",
-        type: "Estudante",
-        downloads: 2156,
-        rating: 4.9,
-        preview: "/student-cv-template.jpg",
-      },
-    ],
+  const loadModels = async () => {
+    setLoading(true)
+    try {
+      const filters = {
+        course: selectedCourse !== "all" ? selectedCourse : undefined,
+        level: selectedLevel !== "all" ? selectedLevel : undefined,
+        search: searchQuery || undefined,
+      }
+      const data = await documentsService.getModels(selectedSubcategory, filters)
+      setModels(data)
+    } catch (error) {
+      toast.error("Erro ao carregar modelos")
+    } finally {
+      setLoading(false)
+    }
   }
 
   const handleCategorySelect = (categoryId: string) => {
@@ -205,13 +175,40 @@ export default function ModelosPage() {
     setCurrentView("models")
   }
 
-  const handleModelSelect = (modelId: number) => {
-    window.location.href = `/documentos?model=${modelId}`
+  const handleModelSelect = async (modelId: number) => {
+    setLoading(true)
+    try {
+      const schema = await documentsService.getSchema(modelId)
+      setSelectedModelSchema(schema)
+      setCurrentView("form")
+    } catch (error) {
+      toast.error("Erro ao carregar formulário")
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleFormSubmit = async (formData: Record<string, any>) => {
+    if (!selectedModelSchema) return
+
+    try {
+      const response = await documentsService.submitForm(selectedModelSchema.id, formData)
+      toast.success("Documento gerado com sucesso!")
+      window.open(response.download_url, "_blank")
+      setCurrentView("models")
+      setSelectedModelSchema(null)
+    } catch (error) {
+      toast.error("Erro ao gerar documento")
+    }
   }
 
   const handleBack = () => {
-    if (currentView === "models") {
+    if (currentView === "form") {
+      setCurrentView("models")
+      setSelectedModelSchema(null)
+    } else if (currentView === "models") {
       setCurrentView("subcategories")
+      setSelectedSubcategory("")
     } else if (currentView === "subcategories") {
       setCurrentView("categories")
       setSelectedCategory("")
@@ -233,8 +230,8 @@ export default function ModelosPage() {
 
       <main className="flex-1">
         {/* Hero Section */}
-        <section className="py-12 px-4 bg-gradient-to-r from-primary/10 to-secondary/10">
-          <div className="container max-w-6xl mx-auto">
+        <section className="py-12 px-4 bg-gradient-to-b from-background to-muted/20">
+          <div className="container max-w-7xl mx-auto">
             <div className="space-y-6">
               {currentView !== "categories" && (
                 <Button variant="ghost" onClick={handleBack} className="mb-4">
@@ -243,188 +240,56 @@ export default function ModelosPage() {
                 </Button>
               )}
 
-              <div className="space-y-2">
+              <div className="text-center space-y-2">
                 <h1 className="text-3xl md:text-4xl font-bold text-balance">
-                  {currentView === "categories" && "Biblioteca de Modelos"}
+                  {currentView === "categories" && "Modelos prontos para ti"}
                   {currentView === "subcategories" && getCurrentCategory()?.name}
                   {currentView === "models" && getCurrentSubcategory()?.name}
+                  {currentView === "form" && "Preencher Documento"}
                 </h1>
-                <p className="text-lg text-muted-foreground">
-                  {currentView === "categories" && "Escolha a categoria de documento que precisa criar"}
+                <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
+                  {currentView === "categories" &&
+                    "Encontra rapidamente o documento que precisas, de monografias a contratos profissionais"}
                   {currentView === "subcategories" && getCurrentCategory()?.description}
                   {currentView === "models" && getCurrentSubcategory()?.description}
+                  {currentView === "form" && "Preencha os campos abaixo para gerar seu documento personalizado"}
                 </p>
               </div>
 
               {/* Search and Filters - only show in models view */}
-              {currentView === "models" && (
-                <div className="flex flex-col md:flex-row gap-4">
-                  <div className="relative flex-1">
-                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
-                    <Input placeholder="Pesquisar modelos..." className="pl-10 h-12" />
-                  </div>
-                  {getCurrentSubcategory()?.courses && (
-                    <Select value={selectedCourse} onValueChange={setSelectedCourse}>
-                      <SelectTrigger className="w-full md:w-48 h-12">
-                        <SelectValue placeholder="Curso" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {getCurrentSubcategory()?.courses?.map((course) => (
-                          <SelectItem key={course} value={course}>
-                            {course}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  )}
-                  {getCurrentSubcategory()?.levels && (
-                    <Select value={selectedLevel} onValueChange={setSelectedLevel}>
-                      <SelectTrigger className="w-full md:w-48 h-12">
-                        <SelectValue placeholder="Nível" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {getCurrentSubcategory()?.levels?.map((level) => (
-                          <SelectItem key={level} value={level}>
-                            {level}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  )}
-                </div>
+              {currentView === "models" && getCurrentSubcategory() && (
+                <SearchFilters
+                  subcategory={getCurrentSubcategory()!}
+                  selectedCourse={selectedCourse}
+                  selectedLevel={selectedLevel}
+                  searchQuery={searchQuery}
+                  onCourseChange={setSelectedCourse}
+                  onLevelChange={setSelectedLevel}
+                  onSearchChange={setSearchQuery}
+                />
               )}
             </div>
           </div>
         </section>
 
         <section className="py-12 px-4">
-          <div className="container max-w-6xl mx-auto">
+          <div className="container max-w-7xl mx-auto">
             {/* Main Categories View */}
             {currentView === "categories" && (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                {mainCategories.map((category) => (
-                  <Card
-                    key={category.id}
-                    className="hover:shadow-lg transition-shadow cursor-pointer group p-6"
-                    onClick={() => handleCategorySelect(category.id)}
-                  >
-                    <CardHeader className="text-center pb-4">
-                      <category.icon className="h-12 w-12 text-primary mx-auto mb-4 group-hover:scale-110 transition-transform" />
-                      <CardTitle className="text-2xl mb-2">{category.name}</CardTitle>
-                      <CardDescription className="text-base">{category.description}</CardDescription>
-                      <Badge variant="secondary" className="mt-2 w-fit mx-auto">
-                        {category.count} modelos disponíveis
-                      </Badge>
-                    </CardHeader>
-                    <CardContent className="text-center">
-                      <ChevronRight className="h-6 w-6 text-muted-foreground mx-auto group-hover:text-primary transition-colors" />
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
+              <CategoryList categories={mainCategories} onSelect={handleCategorySelect} />
             )}
 
             {/* Subcategories View */}
             {currentView === "subcategories" && getCurrentCategory() && (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {getCurrentCategory()?.subcategories.map((subcategory) => (
-                  <Card
-                    key={subcategory.id}
-                    className="hover:shadow-lg transition-shadow cursor-pointer group"
-                    onClick={() => handleSubcategorySelect(subcategory.id)}
-                  >
-                    <CardHeader>
-                      <CardTitle className="text-lg flex items-center justify-between">
-                        {subcategory.name}
-                        <ChevronRight className="h-5 w-5 text-muted-foreground group-hover:text-primary transition-colors" />
-                      </CardTitle>
-                      <CardDescription>{subcategory.description}</CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="flex flex-wrap gap-1">
-                        {subcategory.courses?.slice(0, 3).map((course) => (
-                          <Badge key={course} variant="outline" className="text-xs">
-                            {course}
-                          </Badge>
-                        ))}
-                        {subcategory.levels?.slice(0, 2).map((level) => (
-                          <Badge key={level} variant="outline" className="text-xs">
-                            {level}
-                          </Badge>
-                        ))}
-                        {subcategory.types?.slice(0, 3).map((type) => (
-                          <Badge key={type} variant="outline" className="text-xs">
-                            {type}
-                          </Badge>
-                        ))}
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
+              <SubcategoryList subcategories={getCurrentCategory()!.subcategories} onSelect={handleSubcategorySelect} />
             )}
 
             {/* Models View */}
-            {currentView === "models" && (
-              <div className="space-y-8">
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {Object.values(sampleModels)
-                    .flat()
-                    .map((model) => (
-                      <Card key={model.id} className="hover:shadow-lg transition-shadow group">
-                        <div className="aspect-video bg-muted rounded-t-lg overflow-hidden">
-                          <img
-                            src={model.preview || "/placeholder.svg"}
-                            alt={model.title}
-                            className="w-full h-full object-cover group-hover:scale-105 transition-transform"
-                          />
-                        </div>
-                        <CardHeader>
-                          <CardTitle className="text-lg">{model.title}</CardTitle>
-                          <CardDescription>{model.description}</CardDescription>
-                          {(model.course || model.type) && (
-                            <Badge variant="secondary" className="w-fit">
-                              {model.course || model.type}
-                            </Badge>
-                          )}
-                        </CardHeader>
-                        <CardContent>
-                          <div className="flex items-center justify-between mb-4">
-                            <div className="flex items-center space-x-4 text-sm text-muted-foreground">
-                              <div className="flex items-center space-x-1">
-                                <Download className="h-4 w-4" />
-                                <span>{model.downloads}</span>
-                              </div>
-                              <div className="flex items-center space-x-1">
-                                <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                                <span>{model.rating}</span>
-                              </div>
-                            </div>
-                          </div>
-                          <div className="flex gap-2">
-                            <Button size="sm" className="flex-1" onClick={() => handleModelSelect(model.id)}>
-                              <FileText className="h-4 w-4 mr-2" />
-                              Selecionar
-                            </Button>
-                            <Button size="sm" variant="outline">
-                              <Eye className="h-4 w-4" />
-                            </Button>
-                          </div>
-                        </CardContent>
-                      </Card>
-                    ))}
-                </div>
+            {currentView === "models" && <ModelList models={models} onSelect={handleModelSelect} />}
 
-                {Object.values(sampleModels).flat().length === 0 && (
-                  <div className="text-center py-12">
-                    <FileText className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                    <h3 className="text-lg font-semibold mb-2">Nenhum modelo encontrado</h3>
-                    <p className="text-muted-foreground">
-                      Tente ajustar os filtros ou escolher uma categoria diferente.
-                    </p>
-                  </div>
-                )}
-              </div>
+            {/* Dynamic Form View */}
+            {currentView === "form" && selectedModelSchema && (
+              <DynamicForm schema={selectedModelSchema} onSubmit={handleFormSubmit} onBack={handleBack} />
             )}
           </div>
         </section>
