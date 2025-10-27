@@ -26,7 +26,7 @@ export function Testimonials() {
   return (
     <section className="py-20 px-6">
       <div className="max-w-6xl mx-auto text-center mb-16 space-y-4">
-        <h2 className="text-3xl md:text-4xl font-bold">O que Dizem os Estudantes</h2>
+        <h2 className="text-3xl md:text-4xl font-bold">O que os nossos Clientes Dizem  </h2>
         <p className="text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed">
           Depoimentos reais de quem já transformou sua vida acadêmica com o SaberAngola.
         </p>
