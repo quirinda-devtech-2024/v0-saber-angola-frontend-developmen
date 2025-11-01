@@ -1,11 +1,13 @@
 import type React from "react"
 import type { Metadata } from "next"
-import { GeistSans } from "geist/font/sans"
-import { GeistMono } from "geist/font/mono"
+import { Geist, Geist_Mono } from "next/font/google"
 import { Analytics } from "@vercel/analytics/next"
 import { Suspense } from "react"
 import { Toaster } from "sonner"
 import "./globals.css"
+
+const geistSans = Geist({ subsets: ["latin"] })
+const geistMono = Geist_Mono({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
   title: {
@@ -61,7 +63,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="pt">
-      <body className={`font-sans ${GeistSans.variable} ${GeistMono.variable} antialiased`}>
+      <body className={`${geistSans.className} ${geistMono.className} font-sans antialiased`}>
         <Suspense fallback={null}>{children}</Suspense>
         <Toaster position="top-center" />
         <Analytics />
