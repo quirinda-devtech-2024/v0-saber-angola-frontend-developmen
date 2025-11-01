@@ -1,0 +1,11 @@
+# .v0ignore - Protege o projeto de modificações indevidas pelo V0
+# O V0 tem acesso total apenas ao /frontend
+
+# Proteger infraestrutura
+/backend/**
+/infra/**
+/worker/**
+/docs/**
+
+# Manter acesso ao /frontend
+!/frontend/**
